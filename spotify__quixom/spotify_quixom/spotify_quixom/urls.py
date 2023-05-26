@@ -16,20 +16,11 @@ urlpatterns = [
 ]
 
 
-urlpatterns += i18n_patterns(
+urlpatterns = [
     path("bad/", bad),
-	path('', include('djvue.urls')),
-    
+    path('',include('spotify.urls')),
     path(f"{settings.ADMIN_URL}/", admin.site.urls),
-    
-    path("user/", include("user.urls", namespace="user")),
-    path("api/v1/", include("user.api.urls", namespace="user_api")),
-
-    
-
-    
-    
-)
+]
 
 if settings.DEBUG:
     urlpatterns += [

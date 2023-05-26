@@ -177,7 +177,7 @@ ROOT_URLCONF = "spotify_quixom.urls"
 WSGI_APPLICATION = "spotify_quixom.wsgi.application"
 
 INSTALLED_APPS = [
-    "user.apps.UsersConfig",
+    # "user.apps.UsersConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -187,10 +187,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.messages",
     "compressor",
+    "spotify",
 ]
 
-AUTH_USER_MODEL = "user.User"
-LOGIN_REDIRECT_URL = "user:redirect"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -213,9 +212,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 
-
-
 LOCALE_PATHS = (normpath(join(PROJECT_ROOT, "locale")),)
 
-
-
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+AUTH_USER_MODEL = "spotify.User" 
