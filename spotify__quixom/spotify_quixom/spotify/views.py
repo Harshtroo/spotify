@@ -24,7 +24,8 @@ class Login(LoginView):
         return self.render_to_response(self.get_context_data(form=form))
 
 class SingUp(CreateView):
-    """ SignUp page view"""
+    """ SignUp page view """
     template_name = 'sing_up.html'
     form_class = SignUpForm
     success_url = reverse_lazy('login')
+    

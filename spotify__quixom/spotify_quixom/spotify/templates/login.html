@@ -9,8 +9,8 @@
     <section class="vh-100">
         <div class="container-fluid h-custom">
             <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1 " style="max-width: 100%;margin-left: 10px;">
-                    <div class="card text-black" style="border-radius: 25px;">
+                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1 " style="max-width: 100%; margin-right: 100px;">
+                    <div class="card text-black" style="border-radius: 25px;max-height: 400px;">
                         <div class="card-body" style="height:min-content;">
                             <form class="container" style="margin-bottom: 300px;" method="POST">
                                 {% csrf_token %}
@@ -19,7 +19,7 @@
                                 {{ error }}
                                 {% endfor %}
                                 {% endif %}
-                                <h3 align="center">Login Form</h3>
+                                <h3 align="center" >Login Form</h3><hr>
                                 <!-- Email input -->
                                 <div class="form-outline mb-4">
                                     <label class="form-label" for="form3Example3">User Name</label>
