@@ -36,6 +36,7 @@ CACHE/*
 togit.sh
 htmlcov/
 .env
+
 .vscode/*
 spotify_quixom/spotify_quixom/docker-compose.yml
 spotify_quixom/spotify_quixom/Dockerfile
@@ -53,3 +54,4 @@ spotify_quixom/.runtime.txt
 .eslintrc.yml
 .pre-commit-config.yaml
 . flake8
+env
