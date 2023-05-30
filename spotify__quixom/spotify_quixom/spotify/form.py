@@ -26,4 +26,6 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ["username","email","mobile_number","password1","password2"]
 
-    
+    def clean_description(self):
+        if not self.cleaned_data['description'].strip():
+            raise forms.ValidationError('Your error message here')

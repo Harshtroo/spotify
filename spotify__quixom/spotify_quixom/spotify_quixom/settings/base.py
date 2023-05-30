@@ -217,3 +217,4 @@ LOCALE_PATHS = (normpath(join(PROJECT_ROOT, "locale")),)
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 AUTH_USER_MODEL = "spotify.User"
 LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = 'login'
