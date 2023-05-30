@@ -6,6 +6,11 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
 
 <div style="background-image:url(https://www.clipartmax.com/png/small/18-189979_jazz-musical-notes-on-transparent-background.png);opacity: 0.8;">
+    {% if form.errors %}
+    {% for key, error in form.errors.items %}
+    {{ error }}
+    {% endfor %}
+    {% endif %}
     <section class="vh-100">
         <div class="container-fluid h-custom">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -14,16 +19,11 @@
                         <div class="card-body" style="height:min-content;">
                             <form class="container" style="margin-bottom: 300px;" method="POST">
                                 {% csrf_token %}
-                                {% if form.errors %}
-                                {% for key, error in form.errors.items %}
-                                {{ error }}
-                                {% endfor %}
-                                {% endif %}
+                                
                                 <h3 align="center" >Login Form</h3><hr>
                                 <!-- Email input -->
                                 <div class="form-outline mb-4">
-                                    <label class="form-label" for="form3Example3">User Name</label>
-                                    
+                                    <label class="form-label" for="form3Example3">User Name</label> 
                                     {{form.username}}
                                 </div>
                                 <!-- Password input -->

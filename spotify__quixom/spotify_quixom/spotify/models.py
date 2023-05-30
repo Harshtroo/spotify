@@ -7,6 +7,7 @@ class User(AbstractUser):
     mobile_number = models.IntegerField(validators=[MaxValueValidator(9999999999)],default=0)
 
 class Song(models.Model):
+    """this model user create song"""
     ROLES=(
         ("English","English"),
         ("Gujrati","Gujrati"),
