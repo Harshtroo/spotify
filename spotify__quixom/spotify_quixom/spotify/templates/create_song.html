@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/create_song.css' %}" />
+{% if form.errors %}
+  {% for key, error in form.errors.items %}
+  {{ error }}
+  {% endfor %}
+  {% endif %}
+<div id = "message">
+  
+</div>
+<section class="h-100 h-custom">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-8 col-xl-6">
+        <div class="card rounded-3">
+
+          <div class="card-body p-4 p-md-5">
+                <div class="form-outline datepicker">
+                  <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2" align="center">Add song form</h3>
+
+            <form class="px-md-2" method="POST" id="my-form">
+              {% csrf_token %}
+              <div class="form-outline mb-4">
+                <label class="form-label" for="form3Example1q" >Song name</label>
+                {{form.name}}
+              </div>
+              <div class="form-outline mb-4">
+                <div class="form-outline datepicker">
+                  <label for="exampleDatepicker1" class="form-label">Singer name</label>
+                  {{form.singer_name}}
+                </div>
+              </div>
+              <br>
+              <div class="form-outline mb-4">
+                <label for="exampleDatepicker1" class="form-label">Song category</label>
+                {{form.category}}
+              </div>
+              <button type="button" class="btn btn-success btn-lg mb-1" onclick="createUser()">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  var csrf_token = "{{csrf_token}}"
+  var createsong="{% url 'create_song' %}"
+</script>
+<script src="{% static 'js/create_song.js' %}" ></script>
+
+{% endblock %}

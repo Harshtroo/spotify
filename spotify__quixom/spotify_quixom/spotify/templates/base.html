@@ -25,8 +25,9 @@
         height="50px" width="10%" style="border-radius: 0.5em; margin-left: -9px;">
       <ul class="navbar-nav  mb-6 mb-lg-0">
         {% if request.user.is_authenticated %}
-        <a name="person-outline" class="nav-link active">{{user.username}}</a>
-        
+        <li class="nav-item">
+          <a name="person-outline" class="navbar-brand">{{user.username}}</a>
+        </li>
         {% endif %}
 
         {% if request.user.is_authenticated%}
@@ -37,13 +38,23 @@
         {% endif %}
 
         {% if request.user.is_authenticated %}
-        <a class="nav-link active" aria-current="page" href="{% url 'logout' %}">Logout</a>&nbsp;&nbsp;
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'logout' %}">Logout</a>
+        </li>
         {% endif %}
-        
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'create_song' %}">Add song</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        {% else %}
         <li class="nav-item">
           <a class="navbar-brand" href="{% url 'singup' %}">Sing Up</a>
-
         </li>
+        {% endif %}
       </ul>
     </div>
   </nav>
