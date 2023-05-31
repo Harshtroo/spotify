@@ -6,7 +6,7 @@ from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 from django.urls import reverse_lazy
 import environ
-
+from django.contrib.messages import constants as messages
 ########## PATH CONFIGURATION
 BASE_DIR = dirname(dirname(__file__) + "../../../")
 
@@ -129,7 +129,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "compressor.finders.CompressorFinder",
 )
 
 # Make this unique, and don"t share it with anybody.
@@ -151,10 +150,7 @@ TEMPLATES = [
                 "django.template.context_processors.media",
                 "django.template.context_processors.csrf",
                 "django.template.context_processors.tz",
-                
                 "django.template.context_processors.static",
-
-                
             ]
         },
     },
@@ -218,3 +214,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 AUTH_USER_MODEL = "spotify.User"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = 'login'
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}

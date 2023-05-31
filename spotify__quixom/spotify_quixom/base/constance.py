@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class Role(Enum):
-    licenar = "Licenar"
-    singer = "Singer"
+    licenar = "licenar"
+    singer = "singer"
 
     @classmethod
     def choices(cls):

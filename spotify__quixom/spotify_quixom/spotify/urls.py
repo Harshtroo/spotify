@@ -10,4 +10,7 @@ urlpatterns = [
     path('logout/',views.Logout.as_view(),name="logout"),
     path('singup/',views.SingUp.as_view(),name="singup"),
     path('create_song/',views.SongCreate.as_view(),name="create_song"),
+    path('song_list/',views.SongList.as_view(),name="song_list"),
+    path('song_update/<int:pk>',views.SongUpdate.as_view(),name="song_update"),
+    path('song_delete/<int:pk>',views.SongDelete.as_view(),name="song_delete"),
 ]

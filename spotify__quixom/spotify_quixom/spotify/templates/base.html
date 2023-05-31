@@ -50,6 +50,12 @@
         {% endif %}
 
         {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'song_list' %}">Song list</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
         {% else %}
         <li class="nav-item">
           <a class="navbar-brand" href="{% url 'singup' %}">Sing Up</a>
@@ -58,7 +64,6 @@
       </ul>
     </div>
   </nav>
-  <div style="background-color: rgba(176, 118, 148, 0.5);">
 
 
     {% block content %}
