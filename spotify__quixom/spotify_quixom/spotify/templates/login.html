@@ -7,18 +7,13 @@
 
 <div
   style="background-image:url(https://www.clipartmax.com/png/small/18-189979_jazz-musical-notes-on-transparent-background.png);opacity: 0.8;">
-  {% if form.errors %}
-  {% for key, error in form.errors.items %}
-  {{ error }}
-  {% endfor %}
-  {% endif %}
   <section class="vh-100">
     <div class="container-fluid h-custom">
       <div class="row d-flex justify-content-center align-items-center h-100">
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1 col">
           <div class="card text-black">
             <div class="card-body">
-              <form class="container form-style" method="POST">
+              <form class="container form-style" method="POST" novalidate>
                 {% csrf_token %}
 
                 <h3 align="center">Login Form</h3>
@@ -27,11 +22,25 @@
                 <div class="form-outline mb-4">
                   <label class="form-label" for="form3Example3">User Name</label>
                   {{form.username}}
+                  {% for error in form.username.errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
+                  
                 </div>
                 <!-- Password input -->
                 <div class="form-outline mb-3">
                   <label class="form-label" for="form3Example4">Password</label>
                   {{form.password}}
+                  
+                  {% for error in form.password.errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
+                  
+
                 </div>
                 <div class="text-center text-lg-start mt-4 pt-2">
                   <button type="submit" class="btn btn-primary btn-lg container"
@@ -40,6 +49,11 @@
                     <a href="{% url 'singup' %}" class="link-danger">Register</a>
                   </p>
                 </div>
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
               </form>
             </div>
           </div>

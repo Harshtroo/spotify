@@ -4,11 +4,7 @@
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/create_song.css' %}" />
-{% if form.errors %}
-{% for key, error in form.errors.items %}
-{{ error }}
-{% endfor %}
-{% endif %}
+
 <div id="message">
 
 </div>
@@ -28,27 +24,47 @@
                 {% endif%}
               </h3>
 
-              <form class="px-md-2" method="POST" id="my-form">
+              <form class="px-md-2" method="POST" id="my-form" novalidate>
                 {% csrf_token %}
                 <div class="form-outline mb-4">
                   <label class="form-label" for="form3Example1q">Song name</label>
                   {{form.name}}
+                  {% for error in form.name.errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
                 </div>
                 <div class="form-outline mb-4">
                   <div class="form-outline datepicker">
                     <label for="exampleDatepicker1" class="form-label">Singer name</label>
                     {{form.singer_name}}
+                    {% for error in form.singer_name.errors %}
+                    <div class="alert alert-danger">
+                      <strong>{{ error|escape }}</strong>
+                    </div>
+                    {% endfor %}
                   </div>
                 </div>
                 <div class="form-outline mb-4">
                   <label for="exampleDatepicker1" class="form-label">Song category</label>
                   {{form.category}}
+                  {% for error in form.category.errors %}
+                  <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                  </div>
+                  {% endfor %}
                 </div>
                 {% if form.instance.id %}
-                <button type="submit" class="btn btn-success btn-lg mb-1" onclick="editSong()">Submit</button>
+                <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
                 {% else %}
                 <button type="submit" class="btn btn-success btn-lg mb-1" onclick="createSong()">Submit</button>
                 {% endif %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
               </form>
             </div>
           </div>
