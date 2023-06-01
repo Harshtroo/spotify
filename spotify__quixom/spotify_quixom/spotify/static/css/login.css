@@ -15,7 +15,20 @@
         height: 100%;
     }
 }
-/* 
-.card {
-    opacity:0.8
-} */
+
+.col{
+    max-width: 100%;
+    margin-right: 100px;
+}
+
+.card{
+    border-radius: 25px;
+    max-height: 400px;
+}
+.card-body{
+    height:min-content;
+}
+
+.form-style{
+    margin-bottom: 300px;
+}
