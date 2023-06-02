@@ -26,6 +26,12 @@ class Song(models.Model):
     name = models.CharField(max_length=100)
     singer_name = models.ForeignKey(Singer,on_delete=models.CASCADE)
     category = models.CharField(max_length=50,choices=ROLES, null=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def soft_delete(self):
+        '''soft delete funcction'''
+        self.is_deleted= True
+        self.save()
 
     def __str__(self):
         return self.name

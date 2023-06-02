@@ -67,11 +67,9 @@ class SongList(ListView):
     model = Song
     template_name = "song_list.html"
     context_object_name = 'song'
-
-    def get_queryset(self):
-        queryset = Song.objects.all()
-        return queryset
-
+    queryset = Song.objects.filter(is_deleted = False)
+    
+   
 
 class SongUpdate(SuccessMessageMixin,UpdateView):
     model =  Song
@@ -86,10 +84,17 @@ class SongUpdate(SuccessMessageMixin,UpdateView):
                 super(SongUpdate,self).post(request, *args, **kwargs)
                 return redirect(self.success_url)
             return render(request,self.template_name,{"form":form})
-        
-        
+
+
 class SongDelete(SuccessMessageMixin,DeleteView):
     model = Song
-    template_name = "create_song.html"
     success_url = reverse_lazy("song_list")
     success_message = "successfully delete song"
+
+    def post(self, request, *args, **kwargs):
+        """song soft delete method"""
+        user_details = Song.objects.get(id=kwargs['pk'])
+        user_details.is_deleted = True
+        user_details.save()
+        messages.success(request=self.request, message="successfully Deleted.")
+        return HttpResponseRedirect(self.success_url)
