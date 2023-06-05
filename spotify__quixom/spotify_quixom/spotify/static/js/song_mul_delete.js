@@ -1,9 +1,11 @@
 
 $(document).ready(function () {
+    console.log("Document Ready")
     var select_ids = [];
     // all chackbox select
     $("#all_select").change(function () {
         $(".select_row").prop('checked', $(this).prop('checked'));
+        console.log("fvnfvfn");
         getSelectedIDs();
         handleEditButton();
     });
@@ -60,24 +62,63 @@ $(document).ready(function () {
         var selectedCount = $(".select_row:checked").length;
         console.log("selectedCount",selectedCount);
         if (selectedCount > 1) {
-            $("#btn_edit").prop("disabled", false);
+            $(".btn_edit").prop("disabled", true);
         } else {
-            $("#btn_edit").prop("disabled", true);
+            $(".btn_edit").prop("disabled", false);
         }
     }
+
+
+    $(document).on("click", "#btn_edit", function()
+    {
+        window.location = $(this).attr('href')
+    })
+
+    $(document).on("click", "#favourite", function(){
+        let song_id = $(this).attr("value")
+        $.ajax({
+            url: favSongURL, 
+            type: 'POST',
+            headers: { "X-CSRFToken": csrf_token },
+            data: { "song_id": song_id },
+            success: function(response) {
+                if (response.status == true)
+                {
+                    window.location.reload()
+                }
+            }
+        })
+    })
+
+    $(document).on("click", "#unfavourite", function(){
+        let song_id = $(this).attr("value")
+        $.ajax({
+            url: favSongURL, 
+            type: 'POST',
+            headers: { "X-CSRFToken": csrf_token },
+            data: { "song_id": song_id },
+            success: function(response) {
+                if (response.status == true)
+                {
+                    window.location.reload()
+                }
+            }
+        })
+    })
 })
 
 
-function addFavorite(){
-    ad_fav = document.getElementById("favourite").value
-    console.log(ad_fav)
-    $.ajax({
-        url: songListURL, 
-        type: 'POST',
-        headers: { "X-CSRFToken": csrf_token },
-        data: { "song_id": songId },
-        success: function(response) {
-            console.log(response);
-        }
-    })
-}
+
+// function addFavorite(){
+//     ad_fav = document.getElementById("favourite").value
+//     console.log(ad_fav)
+//     $.ajax({
+//         url: songListURL, 
+//         type: 'POST',
+//         headers: { "X-CSRFToken": csrf_token },
+//         data: { "song_id": songId },
+//         success: function(response) {
+//             console.log(response);
+//         }
+//     })
+// }

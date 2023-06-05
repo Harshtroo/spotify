@@ -35,15 +35,15 @@
       <th><input type="checkbox" class="select_row" name="checkbox" value="{{songs.id}}"></th>
       <td>{{songs.name}}</td>
       <td>{{songs.singer_name}}</td>
-      <td><a class="btn btn-primary" href="{% url 'song_update' songs.id %}" id="btn_edit"
-          disabled="handleEditButton()">Edit</a>
+      <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' songs.id %}" id="btn_edit"
+          >Edit</button>
 
       </td>
       <td>
         {% if songs.is_favorite %}
-        <i class="fa fa-heart fa-2x" style="color:red;" id="favourite" value="{{songs.id}}" aria-hidden="true" onclick="addFavorite()"></i>
+        <a href="#" id="favourite" value="{{songs.id}}"><i class="fa fa-heart fa-2x" style="color:red;" aria-hidden="true" ></i></a>
         {% else %}
-        <i class="fa fa-heart-o fa-2x" id="unfavourite" aria-hidden="true" ></i>
+        <a  href="#" id="unfavourite"  value="{{songs.id}}"><i class="fa fa-heart-o fa-2x" aria-hidden="true" ></i></a>
         {% endif %}
       </td>
 
@@ -57,6 +57,7 @@
 <script>
   var csrf_token = "{{csrf_token}}"
   var songListURL = "{% url 'song_delete' songs.id %}"
+  var favSongURL = "{% url 'song_fav' %}"
 </script>
 {% endfor %}
 

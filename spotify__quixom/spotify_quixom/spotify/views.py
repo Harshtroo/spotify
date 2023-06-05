@@ -104,3 +104,18 @@ class AddToFavourite(UpdateView):
     def form_valid(self, form):
         song_fav = Song.objects.get(pk=self.kwargs['pk'])
         return redirect('song_list')
+
+    def post(self, request, *args, **kwargs):
+        song_id = self.request.POST.get('song_id')
+        song_obj = Song.objects.get(id=song_id)
+        if song_obj.is_favorite:
+            song_obj.is_favorite = False
+            song_obj.save()
+        else:
+            song_obj.is_favorite = True
+            song_obj.save()
+        context = {
+            "status": True,
+            "message": "Song Updated!"
+        }
+        return JsonResponse(context)
