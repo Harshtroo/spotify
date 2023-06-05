@@ -1,15 +1,22 @@
 
 $(document).ready(function () {
+    var select_ids = [];
     // all chackbox select
     $("#all_select").change(function () {
         $(".select_row").prop('checked', $(this).prop('checked'));
         getSelectedIDs();
         handleEditButton();
     });
+
+    $("#delete_master").on("click", function(){
+
+        sendDeleteRequest()
+
+    })
+
     // if user one checkbox unselectd then all sectbox unselected.
     
     $(".select_row").on('click', function () {
-
         if ($(".select_row").length === $(".select_row:checked").length) {
             $("#all_select").prop("checked", true);
         } else {
@@ -18,40 +25,59 @@ $(document).ready(function () {
         getSelectedIDs()
         handleEditButton()
        
-       
     })
     function getSelectedIDs() {
-        var select_id = [];
+        select_ids = []
         $(".select_row:checked").each(function () {
-            select_id.push($(this).val());
-        });
-        console.log("select_id", select_id);
-        sendDeleteRequest(select_id);
-    }
+            select_ids.push($(this).val());
 
-    function sendDeleteRequest(selectedIDs) {
+        });
+        
+    }
+    
+    function sendDeleteRequest() {
+        console.log("inside delete===",select_ids);
         $.ajax({
-            url: 'song_list/',
+            url: songListURL, 
             type: 'POST',
             headers: { "X-CSRFToken": csrf_token },
-            data: {checkbox_ids: selectedIDs},
+            data: {checkbox_ids: select_ids},
             success: function(response) {
                 // Handle the response from Django here
-                console.log(response);
+                location.reload(true);
+
+                // window.location.href = "song_list/"
+
             },
             error: function(error) {
                 // Handle any error that occurs during the AJAX request
                 console.log(error);
             }
         });
-    }
+      }
+
     function handleEditButton() {
         var selectedCount = $(".select_row:checked").length;
+        console.log("selectedCount",selectedCount);
         if (selectedCount > 1) {
-            $(".btn_edit").prop("disabled", true);
+            $("#btn_edit").prop("disabled", false);
         } else {
-            $(".btn_edit").prop("disabled", false);
+            $("#btn_edit").prop("disabled", true);
         }
     }
-    
 })
+
+
+function addFavorite(){
+    ad_fav = document.getElementById("favourite").value
+    console.log(ad_fav)
+    $.ajax({
+        url: songListURL, 
+        type: 'POST',
+        headers: { "X-CSRFToken": csrf_token },
+        data: { "song_id": songId },
+        success: function(response) {
+            console.log(response);
+        }
+    })
+}

@@ -46,7 +46,7 @@ class SongForm(forms.ModelForm):
             visible.field.widget.attrs['class'] = 'form-control'
         for field in self.fields:
             self.fields[field].required = True
-            
+
     def soft_delete(self):
         '''soft delete funcction'''
         self.is_deleted= True

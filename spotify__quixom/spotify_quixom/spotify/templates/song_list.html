@@ -3,6 +3,7 @@
 
 
 {% block content %}
+<script src="{% static 'js/song_mul_delete.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'css/song_list.css' %}" />
 {% for message in messages %}
 <div class="alert {{ message.tags }} alert-dismissible" role="alert">
@@ -11,39 +12,53 @@
 {% endfor %}
 
 
+<!-- <button id="delete_master" onclick="sendDeleteRequest()">Delete</button> -->
+
 <table class="table table-bordered" align="center">
+  <button type="button" id="delete_master">Delete</button>
   <thead>
+
     <tr class="table-dark">
       <th scope="col">No.</th>
       <th><input type="checkbox" class="select" id="all_select"></th>
       <th scope="col">Song name</th>
       <th scope="col">Singer name</th>
       <th scope="col">Edit</th>
-      <th scope="col">Delete</th>
+      <th scope="col">Add to favourite</th>
+
     </tr>
   </thead>
   <tbody>
     {% for songs in song %}
     <tr>
       <th scope="row">{{forloop.counter}}</th>
-      <th><input type="checkbox" class="select_row" id="select_row" name="checkbox" value="{{songs.id}}">{{songs.id}}</th>
+      <th><input type="checkbox" class="select_row" name="checkbox" value="{{songs.id}}"></th>
       <td>{{songs.name}}</td>
       <td>{{songs.singer_name}}</td>
-      <td><a class="btn btn-primary" href="{% url 'song_update' songs.id %}" id="btn_edit">Edit</a>
+      <td><a class="btn btn-primary" href="{% url 'song_update' songs.id %}" id="btn_edit"
+          disabled="handleEditButton()">Edit</a>
+
       </td>
       <td>
-        <form action="{% url 'song_delete' songs.id %}" method="post">
-          {% csrf_token %}
-          <button class="btn btn-primary" type="submit" id="selected" onclick="deleteData()">Delete</button>
-        </form>
+        {% if songs.is_favorite %}
+        <i class="fa fa-heart fa-2x" style="color:red;" id="favourite" value="{{songs.id}}" aria-hidden="true" onclick="addFavorite()"></i>
+        {% else %}
+        <i class="fa fa-heart-o fa-2x" id="unfavourite" aria-hidden="true" ></i>
+        {% endif %}
       </td>
+
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
+</td>
+{% for songs in song %}
 <script>
   var csrf_token = "{{csrf_token}}"
-  
+  var songListURL = "{% url 'song_delete' songs.id %}"
 </script>
-<script src="{% static 'js/song_mul_delete.js' %}"></script>
+{% endfor %}
+
+
 {% endblock %}

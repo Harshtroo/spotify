@@ -2,6 +2,7 @@ from base.constance import Role
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator
+from django.conf import settings
 
 class User(AbstractUser):
     "this model use create user"
@@ -27,7 +28,8 @@ class Song(models.Model):
     singer_name = models.ForeignKey(Singer,on_delete=models.CASCADE)
     category = models.CharField(max_length=50,choices=ROLES, null=True)
     is_deleted = models.BooleanField(default=False)
-
+    is_favorite = models.BooleanField(default=False)
+    
     def soft_delete(self):
         '''soft delete funcction'''
         self.is_deleted= True

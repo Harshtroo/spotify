@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Type
 from django.db import models
 from django.forms.forms import BaseForm
+from django.forms.models import BaseModelForm
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView,CreateView,ListView,UpdateView,DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -24,7 +25,7 @@ class Login(LoginView):
     template_name ="login.html"
     success_url =reverse_lazy("home")
 
-
+    
 class Logout(LogoutView):
     """logout class"""
     pass
@@ -68,8 +69,7 @@ class SongList(ListView):
     template_name = "song_list.html"
     context_object_name = 'song'
     queryset = Song.objects.filter(is_deleted = False)
-    
-   
+
 
 class SongUpdate(SuccessMessageMixin,UpdateView):
     model =  Song
@@ -92,12 +92,15 @@ class SongDelete(SuccessMessageMixin,DeleteView):
     success_message = "successfully delete song"
 
     def post(self, request, *args, **kwargs):
-        selected_ids = request.POST.getlist('checkbox_ids') 
-        print("select_ids ======",selected_ids) # Retrieve the selected checkbox IDs
+        selected_ids = request.POST.getlist('checkbox_ids[]')
         if selected_ids:
-            songs = Song.objects.filter(id__in=selected_ids)  # Filter songs based on selected IDs
-            selected_ids.is_deleted = True  # Mark songs as deleted using update() method
-            selected_ids.save()
+            Song.objects.filter(id__in=selected_ids).update(is_deleted = True)
             messages.success(request, self.success_message)
-        
-        return HttpResponseRedirect(self.success_url)
+        return JsonResponse({"messages":"success"})
+    
+class AddToFavourite(UpdateView):
+    model = Song
+    
+    def form_valid(self, form):
+        song_fav = Song.objects.get(pk=self.kwargs['pk'])
+        return redirect('song_list')

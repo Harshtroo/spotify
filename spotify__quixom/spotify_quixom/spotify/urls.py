@@ -13,4 +13,5 @@ urlpatterns = [
     path('song_list/',views.SongList.as_view(),name="song_list"),
     path('song_update/<int:pk>',views.SongUpdate.as_view(),name="song_update"),
     path('song_delete/<int:pk>',views.SongDelete.as_view(),name="song_delete"),
-]
+    path('song_fav/<int:pk>',views.AddToFavourite.as_view(),name="song_fav"),
+]   
