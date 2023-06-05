@@ -2,42 +2,56 @@
 $(document).ready(function () {
     // all chackbox select
     $("#all_select").change(function () {
-        $(".select_row").each(function () {
-            this.checked = $("#all_select").prop('checked');
-        })
-    })
+        $(".select_row").prop('checked', $(this).prop('checked'));
+        getSelectedIDs();
+        handleEditButton();
+    });
     // if user one checkbox unselectd then all sectbox unselected.
     
     $(".select_row").on('click', function () {
-        console.log($(".select_row:checked"));
 
-        // console.log("dfvdfv",(".select_row").length);
-        // console.log($(".select_row").id);
-
-        if ($(".select_row").length == $(".select_row:checked").length) {
-            $("#all_select").prop("checked", true)
+        if ($(".select_row").length === $(".select_row:checked").length) {
+            $("#all_select").prop("checked", true);
+        } else {
+            $("#all_select").prop("checked", false);
         }
-        else if ($(".select_row").length - 1 == $(".select_row:checked").length) {
-            $("#all_select").prop("checked", false)
-        }
-
-        var select_id = []
-        // var select_checkbox = document.getElementById("select_row").value
-        // console.log("select========",select_checkbox);
-        // // select_id.append(select_checkbox)
-        // // console.log("kncsdv",select_id);
-        // if ($(this).is(":checked")){
-        //     select_id.push($(this).attr('id'))
-        // }
-        // console.log("select_id",select_id);
-        // var row =$(this)
-        // console.log(row);
-        // console.log(row.find('input[type="checkout]').is(':checked'));
-
-        var chek = document.querySelectorAll('input[name="checkbox"]:checked')
-        chek.array.forEach(checkbox => {
-            select_id.push(checkbox.value)
-        }); 
-        console.log("select_id",select_id);
+        getSelectedIDs()
+        handleEditButton()
+       
+       
     })
+    function getSelectedIDs() {
+        var select_id = [];
+        $(".select_row:checked").each(function () {
+            select_id.push($(this).val());
+        });
+        console.log("select_id", select_id);
+        sendDeleteRequest(select_id);
+    }
+
+    function sendDeleteRequest(selectedIDs) {
+        $.ajax({
+            url: 'song_list/',
+            type: 'POST',
+            headers: { "X-CSRFToken": csrf_token },
+            data: {checkbox_ids: selectedIDs},
+            success: function(response) {
+                // Handle the response from Django here
+                console.log(response);
+            },
+            error: function(error) {
+                // Handle any error that occurs during the AJAX request
+                console.log(error);
+            }
+        });
+    }
+    function handleEditButton() {
+        var selectedCount = $(".select_row:checked").length;
+        if (selectedCount > 1) {
+            $(".btn_edit").prop("disabled", true);
+        } else {
+            $(".btn_edit").prop("disabled", false);
+        }
+    }
+    
 })

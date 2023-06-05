@@ -41,6 +41,9 @@
     {% endfor %}
   </tbody>
 </table>
-
+<script>
+  var csrf_token = "{{csrf_token}}"
+  
+</script>
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 {% endblock %}

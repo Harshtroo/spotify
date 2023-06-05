@@ -92,9 +92,12 @@ class SongDelete(SuccessMessageMixin,DeleteView):
     success_message = "successfully delete song"
 
     def post(self, request, *args, **kwargs):
-        """song soft delete method"""
-        user_details = Song.objects.get(id=kwargs['pk'])
-        user_details.is_deleted = True
-        user_details.save()
-        messages.success(request=self.request, message="successfully Deleted.")
+        selected_ids = request.POST.getlist('checkbox_ids') 
+        print("select_ids ======",selected_ids) # Retrieve the selected checkbox IDs
+        if selected_ids:
+            songs = Song.objects.filter(id__in=selected_ids)  # Filter songs based on selected IDs
+            selected_ids.is_deleted = True  # Mark songs as deleted using update() method
+            selected_ids.save()
+            messages.success(request, self.success_message)
+        
         return HttpResponseRedirect(self.success_url)
