@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block content %}
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'css/song_list.css' %}" />
@@ -12,12 +11,9 @@
 {% endfor %}
 
 
-<!-- <button id="delete_master" onclick="sendDeleteRequest()">Delete</button> -->
-
 <table class="table table-bordered" align="center">
-  <button type="button" id="delete_master">Delete</button>
+  <button type="button" class="delete_master">Delete</button>
   <thead>
-
     <tr class="table-dark">
       <th scope="col">No.</th>
       <th><input type="checkbox" class="select" id="all_select"></th>
@@ -25,7 +21,6 @@
       <th scope="col">Singer name</th>
       <th scope="col">Edit</th>
       <th scope="col">Add to favourite</th>
-
     </tr>
   </thead>
   <tbody>
@@ -35,24 +30,61 @@
       <th><input type="checkbox" class="select_row" name="checkbox" value="{{songs.id}}"></th>
       <td>{{songs.name}}</td>
       <td>{{songs.singer_name}}</td>
-      <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' songs.id %}" id="btn_edit"
-          >Edit</button>
-
+      <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' songs.id %}" id="btn_edit">Edit</button>
       </td>
       <td>
         {% if songs.is_favorite %}
-        <a href="#" id="favourite" value="{{songs.id}}"><i class="fa fa-heart fa-2x" style="color:red;" aria-hidden="true" ></i></a>
+        <a id="favourite" onclick="addFav()"><i class="fa fa-heart fa-2x" style="color:red;"
+            aria-hidden="true"></i></a>
         {% else %}
-        <a  href="#" id="unfavourite"  value="{{songs.id}}"><i class="fa fa-heart-o fa-2x" aria-hidden="true" ></i></a>
+        <a id="unfavourite" onclick="addFav()"><i class="fa fa-heart-o fa-2x" aria-hidden="true"></i></a>
         {% endif %}
       </td>
-
-    </tr>
+    </tr> 
     {% endfor %}
   </tbody>
 </table>
 
+{% if is_paginated %}
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+
+    {% if page_obj.has_previous %}
+
+    <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+    </li>
+    {% endif %}
+
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+
+    <li class="page-item active" aria-current="page">
+      <span class="page-link">
+        {{ i }}
+        <span class="sr-only">(current)</span>
+      </span>
+    </li>
+
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% else %}
+
+    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
 </td>
+
 {% for songs in song %}
 <script>
   var csrf_token = "{{csrf_token}}"
@@ -60,6 +92,5 @@
   var favSongURL = "{% url 'song_fav' %}"
 </script>
 {% endfor %}
-
 
 {% endblock %}

@@ -24,12 +24,12 @@ class Song(models.Model):
         ("Gujrati","Gujrati"),
         ("Hindi","Hindi"),
     )
+
     name = models.CharField(max_length=100)
     singer_name = models.ForeignKey(Singer,on_delete=models.CASCADE)
     category = models.CharField(max_length=50,choices=ROLES, null=True)
     is_deleted = models.BooleanField(default=False)
-    is_favorite = models.BooleanField(default=False)
-    
+
     def soft_delete(self):
         '''soft delete funcction'''
         self.is_deleted= True
@@ -37,3 +37,8 @@ class Song(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, unique=False,on_delete=models.CASCADE)
+    songs = models.ManyToManyField(Song)

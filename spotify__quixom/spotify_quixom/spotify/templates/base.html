@@ -29,6 +29,13 @@
       <ul class="navbar-nav  mb-6 mb-lg-0">
         {% if request.user.is_authenticated %}
         <li class="nav-item">
+        <a id="favourite" href="{% url 'user_fav_song' %}"><i class="navbar-brand fa fa-heart fa-2x" style="color:red;"
+          aria-hidden="true"></i></a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
           <a name="person-outline" class="navbar-brand">{{user.username}}</a>
         </li>
         {% endif %}

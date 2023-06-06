@@ -1,18 +1,18 @@
 from typing import Any, Dict, Optional, Type
 from django.db import models
 from django.forms.forms import BaseForm
-from django.forms.models import BaseModelForm
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView,CreateView,ListView,UpdateView,DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from .form import SignUpForm,LoginForm,SongForm
-from .models import User,Song
+from .models import User,Song,Favorite
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import Group, Permission
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
 
 class Home(TemplateView):
     """ Home page view """
@@ -69,9 +69,11 @@ class SongList(ListView):
     template_name = "song_list.html"
     context_object_name = 'song'
     queryset = Song.objects.filter(is_deleted = False)
-
+    paginate_by = 10
+   
 
 class SongUpdate(SuccessMessageMixin,UpdateView):
+    """ song updatge view """
     model =  Song
     form_class = SongForm
     template_name = "create_song.html"
@@ -87,6 +89,7 @@ class SongUpdate(SuccessMessageMixin,UpdateView):
 
 
 class SongDelete(SuccessMessageMixin,DeleteView):
+    """ song delete view """
     model = Song
     success_url = reverse_lazy("song_list")
     success_message = "successfully delete song"
@@ -97,25 +100,32 @@ class SongDelete(SuccessMessageMixin,DeleteView):
             Song.objects.filter(id__in=selected_ids).update(is_deleted = True)
             messages.success(request, self.success_message)
         return JsonResponse({"messages":"success"})
-    
-class AddToFavourite(UpdateView):
-    model = Song
-    
-    def form_valid(self, form):
-        song_fav = Song.objects.get(pk=self.kwargs['pk'])
-        return redirect('song_list')
+
+
+class AddToFavourite(CreateView):
+    """ song add to favourite """
+    model = Favorite
 
     def post(self, request, *args, **kwargs):
         song_id = self.request.POST.get('song_id')
-        song_obj = Song.objects.get(id=song_id)
-        if song_obj.is_favorite:
-            song_obj.is_favorite = False
-            song_obj.save()
-        else:
-            song_obj.is_favorite = True
-            song_obj.save()
+        obj, create = Favorite.objects.get_or_create(user=self.request.user)
+        obj.songs.add(Song.objects.get(id=song_id))
+        obj.save()
+        print("===========",Favorite.objects.filter())
         context = {
-            "status": True,
-            "message": "Song Updated!"
+            "message": "Song Updated!",
+            "song_id":song_id
         }
         return JsonResponse(context)
+
+
+class LoginUserFavouriteSong(ListView):
+    model = Favorite
+    template_name = 'favorite_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['fav'] = Favorite.objects.filter(user=self.request.user)
+        # print("============",Favorite.objects.filter(son=self.request.user))
+        return context
