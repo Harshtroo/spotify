@@ -70,6 +70,16 @@ class SongList(ListView):
     context_object_name = 'song'
     queryset = Song.objects.filter(is_deleted = False)
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        song_obj = Favorite.objects.get(user=self.request.user)
+        song_id_list = []
+        for song in song_obj.songs.all():
+            song_id_list.append(song.id)
+        context["song_id_list"] = song_id_list
+        return context
    
 
 class SongUpdate(SuccessMessageMixin,UpdateView):
@@ -109,13 +119,22 @@ class AddToFavourite(CreateView):
     def post(self, request, *args, **kwargs):
         song_id = self.request.POST.get('song_id')
         obj, create = Favorite.objects.get_or_create(user=self.request.user)
-        obj.songs.add(Song.objects.get(id=song_id))
+        if obj.songs.filter(id=song_id).exists():
+            obj.songs.remove(Song.objects.get(id=song_id))
+            context = {
+                "status": True,
+                "message": "Song Removed!",
+                "song_id": song_id
+            }
+        else:
+            obj.songs.add(Song.objects.get(id=song_id))
+            context = {
+                "status": True,
+                "message": "Song Added!",
+                "song_id": song_id
+            }
+
         obj.save()
-        print("===========",Favorite.objects.filter())
-        context = {
-            "message": "Song Updated!",
-            "song_id":song_id
-        }
         return JsonResponse(context)
 
 
@@ -127,5 +146,5 @@ class LoginUserFavouriteSong(ListView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         context['fav'] = Favorite.objects.filter(user=self.request.user)
-        # print("============",Favorite.objects.filter(son=self.request.user))
+        print("============",context['fav'])
         return context

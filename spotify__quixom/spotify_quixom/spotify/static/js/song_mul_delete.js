@@ -66,9 +66,7 @@ $(document).ready(function () {
     })
     
 })
-function addFav(){
-    let song_id = $(this).attr("value")
-    debugger;
+function addFav(song_id){
     $.ajax({
         url: favSongURL,
         type: 'POST',
@@ -77,7 +75,8 @@ function addFav(){
         success: function(response) {
             if (response.status == true)
             {
-                // window.location.reload()
+                window.location.reload()
+                // $('#song-table').load(location.href + ' #song-table');
             }
         }
     })
