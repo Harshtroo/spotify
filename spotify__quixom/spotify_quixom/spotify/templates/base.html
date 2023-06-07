@@ -71,6 +71,18 @@
           <a class="navbar-brand" href="{% url 'singup' %}">Sing Up</a>
         </li>
         {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'play_list' %}">Add Playlist</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'show_playlist' %}">Playlist</a>
+        </li>
+        {% endif %}
       </ul>
     </div>
   </nav>

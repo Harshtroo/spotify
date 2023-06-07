@@ -9,7 +9,7 @@ $(document).ready(function () {
         handleEditButton();
     });
 
-    $("#delete_master").on("click", function(){
+    $(".delete_master").on("click", function(){
         sendDeleteRequest()
     })
 

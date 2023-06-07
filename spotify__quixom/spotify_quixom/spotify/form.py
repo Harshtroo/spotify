@@ -1,7 +1,7 @@
 from typing import Any
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
-from .models import User,Song
+from .models import User,Song,PlayList
 
 class LoginForm(AuthenticationForm):
 
@@ -57,3 +57,16 @@ class SongEditForm(forms.ModelForm):
     class Meta:
         model = Song
         fields = ["name","singer_name","category"]
+
+
+class CreatePlayListForm(forms.ModelForm):
+    class Meta:
+        model = PlayList
+        fields = ["list_name","songs"]
+
+    def __init__(self, *args, **kwargs):
+        super(CreatePlayListForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+        for field in self.fields:
+            self.fields[field].required = True

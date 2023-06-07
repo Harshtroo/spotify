@@ -4,8 +4,8 @@ from django.forms.forms import BaseForm
 from django.shortcuts import render,redirect
 from django.views.generic import TemplateView,CreateView,ListView,UpdateView,DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
-from .form import SignUpForm,LoginForm,SongForm
-from .models import User,Song,Favorite
+from .form import SignUpForm, LoginForm, SongForm, CreatePlayListForm
+from .models import User, Song, Favourite, PlayList
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -25,7 +25,7 @@ class Login(LoginView):
     template_name ="login.html"
     success_url =reverse_lazy("home")
 
-    
+
 class Logout(LogoutView):
     """logout class"""
     pass
@@ -74,13 +74,13 @@ class SongList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
-        song_obj = Favorite.objects.get(user=self.request.user)
+        song_obj = Favourite.objects.get(user=self.request.user)
         song_id_list = []
         for song in song_obj.songs.all():
             song_id_list.append(song.id)
         context["song_id_list"] = song_id_list
         return context
-   
+
 
 class SongUpdate(SuccessMessageMixin,UpdateView):
     """ song updatge view """
@@ -114,11 +114,11 @@ class SongDelete(SuccessMessageMixin,DeleteView):
 
 class AddToFavourite(CreateView):
     """ song add to favourite """
-    model = Favorite
+    model = Favourite
 
     def post(self, request, *args, **kwargs):
         song_id = self.request.POST.get('song_id')
-        obj, create = Favorite.objects.get_or_create(user=self.request.user)
+        obj, create = Favourite.objects.get_or_create(user=self.request.user)
         if obj.songs.filter(id=song_id).exists():
             obj.songs.remove(Song.objects.get(id=song_id))
             context = {
@@ -133,18 +133,51 @@ class AddToFavourite(CreateView):
                 "message": "Song Added!",
                 "song_id": song_id
             }
-
         obj.save()
         return JsonResponse(context)
 
 
 class LoginUserFavouriteSong(ListView):
-    model = Favorite
+    model = Favourite
     template_name = 'favorite_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['fav'] = Favorite.objects.filter(user=self.request.user)
-        print("============",context['fav'])
+        context['fav'] = Favourite.objects.filter(user=self.request.user)
         return context
+
+
+class CreatePlayList(SuccessMessageMixin,CreateView):
+    form_class = CreatePlayListForm
+    template_name = "play_list.html"
+    success_url = reverse_lazy("song_list")
+    success_message = "successfully create playlist"
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(self.request.POST or None)
+        if form.is_valid():
+            self.object = form.save(commit=False)
+            self.object.user = self.request.user
+            self.object.save()
+            form.save()
+            return redirect(self.success_url)
+        return render(request,self.template_name,{"form":form})
+
+
+class ShowPlayList(ListView):
+    model = PlayList
+    template_name = "show_play_list.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['playlist'] = PlayList.objects.filter(user=self.request.user)
+        # breakpoint()
+        return context
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['user'] = self.request.user
+    #     context['fav'] = Favourite.objects.filter(user=self.request.user)
+    #     return context

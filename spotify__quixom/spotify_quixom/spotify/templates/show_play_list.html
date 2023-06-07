@@ -2,21 +2,26 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/favourite_list.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/show_play_list.css' %}" />
+
 <table class="table table-bordered" align="center">
-    
+
     <thead>
       <tr class="table-dark">
         <th scope="col">No.</th>
-        <th scope="col">Song name</th>
+        <th scope="col">playlist name</th>
+          <th scope="col">Song name</th>
       </tr>
     </thead>
     <tbody>
-        {% for i in fav %}
+        {% for play_list_name in playlist %}
+
         <tr>
             <td scope="row">{{forloop.counter}}</td>
             <td scope="row">
-            {% for song_name in  i.songs.all %}
+                {{play_list_name}}</td>
+            <td>
+            {% for song_name in  play_list_name.songs.all %}
             <span>
             {{song_name}}<br>
             </span>

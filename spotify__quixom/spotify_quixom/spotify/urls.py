@@ -15,4 +15,6 @@ urlpatterns = [
     path('song_delete/<int:pk>',views.SongDelete.as_view(),name="song_delete"),
     path('song_fav/',views.AddToFavourite.as_view(),name="song_fav"),
     path('user_fav_song/',views.LoginUserFavouriteSong.as_view(),name="user_fav_song"),
+    path('play_list/',views.CreatePlayList.as_view(),name="play_list"),
+    path('show_playlist/',views.ShowPlayList.as_view(),name="show_playlist"),
 ]   
