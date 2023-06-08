@@ -1,10 +1,7 @@
-from typing import Any, Dict, Optional, Type
-from django.db import models
-from django.forms.forms import BaseForm
-from django.shortcuts import render,redirect
-from django.views.generic import TemplateView,CreateView,ListView,UpdateView,DeleteView
+from django.shortcuts import render, redirect
+from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
-from .form import SignUpForm, LoginForm, SongForm, CreatePlayListForm
+from .form import SignUpForm, LoginForm, SongForm, CreatePlayListForm, UpdatePlayListForm
 from .models import User, Song, Favourite, PlayList
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -12,7 +9,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.contrib.auth.models import Group, Permission
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
-from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class Home(TemplateView):
     """ Home page view """
@@ -22,8 +19,8 @@ class Home(TemplateView):
 class Login(LoginView):
     """ Login page view"""
     form_class = LoginForm
-    template_name ="login.html"
-    success_url =reverse_lazy("home")
+    template_name = "login.html"
+    success_url = reverse_lazy("home")
 
 
 class Logout(LogoutView):
@@ -47,10 +44,10 @@ class SingUp(CreateView):
             group = Group.objects.get(name=user_role)
             user.groups.add(group.id)
             return HttpResponseRedirect(self.success_url)
-        return render(request,"sing_up.html",{"form":form})
+        return render(request, "sing_up.html", {"form": form})
 
 
-class SongCreate(SuccessMessageMixin,CreateView):
+class SongCreate(SuccessMessageMixin, CreateView):
     template_name = "create_song.html"
     form_class = SongForm
     success_url = reverse_lazy("home")
@@ -59,46 +56,47 @@ class SongCreate(SuccessMessageMixin,CreateView):
     def post(self, request, *args, **kwargs):
         form = self.form_class(self.request.POST or None)
         if form.is_valid():
-            super(SongCreate,self).post(request, *args, **kwargs)
+            super(SongCreate, self).post(request, *args, **kwargs)
             return redirect(self.success_url)
-        return render(request,self.template_name,{"form":form})
+        return render(request, self.template_name, {"form": form})
 
 
-class SongList(ListView):
+class SongList(LoginRequiredMixin,ListView):
     model = Song
     template_name = "song_list.html"
-    context_object_name = 'song'
-    queryset = Song.objects.filter(is_deleted = False)
+    context_object_name = 'songs'
+    queryset = Song.objects.filter(is_deleted=False)
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
-        song_obj = Favourite.objects.get(user=self.request.user)
-        song_id_list = []
-        for song in song_obj.songs.all():
-            song_id_list.append(song.id)
-        context["song_id_list"] = song_id_list
+        if Favourite.objects.filter(user=self.request.user).exists():
+            song_obj = Favourite.objects.filter(user=self.request.user)
+            song_id_list = []
+            for song in song_obj.songs.all():
+                song_id_list.append(song.id)
+            context["song_id_list"] = song_id_list
         return context
 
 
-class SongUpdate(SuccessMessageMixin,UpdateView):
+class SongUpdate(SuccessMessageMixin, UpdateView):
     """ song updatge view """
-    model =  Song
+    model = Song
     form_class = SongForm
     template_name = "create_song.html"
     success_url = reverse_lazy('song_list')
     success_message = "successfully edit song"
 
     def post(self, request, *args, **kwargs):
-            form = self.form_class(self.request.POST or None)
-            if form.is_valid():
-                super(SongUpdate,self).post(request, *args, **kwargs)
-                return redirect(self.success_url)
-            return render(request,self.template_name,{"form":form})
+        form = self.form_class(self.request.POST or None)
+        if form.is_valid():
+            super(SongUpdate, self).post(request, *args, **kwargs)
+            return redirect(self.success_url)
+        return render(request, self.template_name, {"form": form})
 
 
-class SongDelete(SuccessMessageMixin,DeleteView):
+class SongDelete(SuccessMessageMixin, DeleteView):
     """ song delete view """
     model = Song
     success_url = reverse_lazy("song_list")
@@ -107,9 +105,9 @@ class SongDelete(SuccessMessageMixin,DeleteView):
     def post(self, request, *args, **kwargs):
         selected_ids = request.POST.getlist('checkbox_ids[]')
         if selected_ids:
-            Song.objects.filter(id__in=selected_ids).update(is_deleted = True)
+            Song.objects.filter(id__in=selected_ids).update(is_deleted=True)
             messages.success(request, self.success_message)
-        return JsonResponse({"messages":"success"})
+        return JsonResponse({"messages": "success"})
 
 
 class AddToFavourite(CreateView):
@@ -148,7 +146,7 @@ class LoginUserFavouriteSong(ListView):
         return context
 
 
-class CreatePlayList(SuccessMessageMixin,CreateView):
+class CreatePlayList(SuccessMessageMixin, CreateView):
     form_class = CreatePlayListForm
     template_name = "play_list.html"
     success_url = reverse_lazy("song_list")
@@ -162,22 +160,40 @@ class CreatePlayList(SuccessMessageMixin,CreateView):
             self.object.save()
             form.save()
             return redirect(self.success_url)
-        return render(request,self.template_name,{"form":form})
+        return render(request, self.template_name, {"form": form})
 
 
-class ShowPlayList(ListView):
+class ShowPlayList(LoginRequiredMixin,ListView):
     model = PlayList
     template_name = "show_play_list.html"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['playlist'] = PlayList.objects.filter(user=self.request.user)
-        # breakpoint()
+        if PlayList.objects.filter(user=self.request.user).exists():
+            context['playlist'] = PlayList.objects.filter(user=self.request.user)
         return context
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['user'] = self.request.user
-    #     context['fav'] = Favourite.objects.filter(user=self.request.user)
-    #     return context
+
+class UpdatePlayList(UpdateView):
+    model = PlayList
+    form_class = UpdatePlayListForm
+    template_name = "play_list.html"
+    success_url = reverse_lazy("show_playlist")
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(self.request.POST or None)
+        if form.is_valid():
+            super(UpdatePlayList,self).post(request, *args, **kwargs)
+            return redirect(self.success_url)
+        return render(request,self.template_name,{"form":form})
+
+
+class DeletePlayList(DeleteView):
+    model = PlayList
+    # template_name = "playlist_confirm_delete.html"
+    success_url = reverse_lazy("show_playlist")
+
+    def post(self, request, *args, **kwargs):
+        PlayList.objects.filter(id=kwargs["pk"]).delete()
+        return HttpResponseRedirect(self.success_url)

@@ -11,13 +11,20 @@
         <div class="card rounded-3">
           <div class="card-body p-4 p-md-5">
             <div class="form-outline datepicker">
-              <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2" align="center">Create play list</h3>
+              <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2" align="center">
+                  {% if form.instance.id %}
+                  Edit playlist
+                  {% else %}
+                  Create play list
+                  {% endif %}
+              </h3>
+
 
               <form class="px-md-2" method="POST" id="my-form" novalidate>
                 {% csrf_token %}
                 <div class="form-outline mb-4">
                   <label class="form-label" for="form3Example1q">Playlist name </label>
-                  {{form.list_name}}
+                  {{form.name}}
                   {% for error in form.list_name.errors %}
                   <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>

@@ -21,6 +21,7 @@ class Singer(models.Model):
 
 class Song(models.Model):
     """this model user create song"""
+
     ROLES = (
         ("English", "English"),
         ("Gujrati", "Gujrati"),
@@ -47,10 +48,10 @@ class Favourite(models.Model):
 
 
 class PlayList(models.Model):
-    list_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     songs = models.ManyToManyField(Song)
 
     def __str__(self):
-        return self.list_name
+        return self.name
 

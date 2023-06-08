@@ -11,6 +11,8 @@
         <th scope="col">No.</th>
         <th scope="col">playlist name</th>
           <th scope="col">Song name</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -26,10 +28,44 @@
             {{song_name}}<br>
             </span>
             {% endfor %}
-        </td>
+            </td>
+            <td>
+                <a class="btn btn-primary btn_edit" href="{% url 'update_playlist' play_list_name.id %}" id="btn_edit">Edit</a>
+            </td>
+            <td>
+                 <button class="btn btn-primary btn_edit"  data-bs-toggle="modal" data-bs-target="#exampleModal_{{play_list_name.id }}">Delete</button>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% for play_list_name in playlist %}
+
+
+<div class="modal fade" id="exampleModal_{{play_list_name.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-confirm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="icon-box">
+          <i class="material-icons">&#xE5CD;</i>
+        </div>
+        <h4 class="modal-title">Are you sure?</h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      </div>
+        <form action="{% url 'delete_playlist' play_list_name.id %}" method="POST">
+            {% csrf_token %}
+      <div class="modal-body">
+        <p>Do you really want to delete {{play_list_name.list_name }} playlist? This process cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger" >Delete</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 {% endblock %}

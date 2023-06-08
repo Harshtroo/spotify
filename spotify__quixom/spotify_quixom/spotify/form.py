@@ -62,10 +62,23 @@ class SongEditForm(forms.ModelForm):
 class CreatePlayListForm(forms.ModelForm):
     class Meta:
         model = PlayList
-        fields = ["list_name","songs"]
+        fields = ["name","songs"]
 
     def __init__(self, *args, **kwargs):
         super(CreatePlayListForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+        for field in self.fields:
+            self.fields[field].required = True
+
+
+class UpdatePlayListForm(forms.ModelForm):
+    class Meta:
+        model = PlayList
+        fields = ["name","songs"]
+
+    def __init__(self, *args, **kwargs):
+        super(UpdatePlayListForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
         for field in self.fields:
