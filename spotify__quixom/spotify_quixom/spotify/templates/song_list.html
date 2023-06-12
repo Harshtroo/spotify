@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-<script src="{% static 'js/song_mul_delete.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'css/song_list.css' %}" />
 {% for message in messages %}
 <div class="alert {{ message.tags }} alert-dismissible" role="alert">
@@ -10,9 +9,11 @@
 </div>
 {% endfor %}
 
+<a type="button" class="btn btn-primary">Add to Playlist</a>
 
+<button type="button" class="btn_delete delete_master">Delete</button>
 <table class="table table-bordered" id="song-table" align="center">
-  <button type="button" class="delete_master">Delete</button>
+
   <thead>
     <tr class="table-dark">
       <th scope="col">No.</th>
@@ -25,24 +26,30 @@
   </thead>
   <tbody>
     {% for song in songs %}
-    <tr>
+    <tr song_id={{song.id}} id="table">
       <th scope="row">{{forloop.counter}}</th>
       <th><input type="checkbox" class="select_row" name="checkbox" value="{{song.id}}"></th>
       <td>{{song.name}}</td>
       <td>{{song.singer_name}}</td>
       <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' song.id %}" id="btn_edit">Edit</button>
       </td>
-      <td>
 
-        {% if songs.id in song_id_list %}
-        <a id="favourite" onclick="addFav({{ song.id }})"><i class="fa fa-heart fa-2x" style="color:red;"
-            aria-hidden="true"></i></a>
+      <td id="fav">
+        {% if song.id in song_id_list %}
+        <a id="favourite" onclick="addFav({{ song.id }})">
+          <i class="fa fa-heart fa-2x fav" style="color:red;" aria-hidden="true" href="{% url 'song_fav' %}">
+
+          </i>
+        </a>
         {% else %}
-        <a id="unfavourite" onclick="addFav({{ song.id }})"><i class="fa fa-heart-o fa-2x" aria-hidden="true"></i></a>
+        <a id="unfavourite" onclick="addFav({{ song.id }})">
+          <i class="fa fa-heart-o fa-2x" aria-hidden="true"></i>
+        </a>
         {% endif %}
       </td>
     </tr>
     {% endfor %}
+
   </tbody>
 </table>
 
@@ -86,12 +93,16 @@
 {% endif %}
 
 
-{% for songs in song %}
+
 <script>
-  var csrf_token = "{{csrf_token}}"
+  {% for songs in song %}
   var songListURL = "{% url 'song_delete' songs.id %}"
+  {% endfor %}
+  var csrf_token = "{{csrf_token}}"
+
   var favSongURL = "{% url 'song_fav' %}"
+
 </script>
-{% endfor %}
+<script src="{% static 'js/song_mul_delete.js' %}"></script>
 
 {% endblock %}

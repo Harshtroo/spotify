@@ -56,13 +56,14 @@ class SongCreate(SuccessMessageMixin, CreateView):
     def post(self, request, *args, **kwargs):
         form = self.form_class(self.request.POST or None)
         if form.is_valid():
-            super(SongCreate, self).post(request, *args, **kwargs)
-            return redirect(self.success_url)
+            # super(SongCreate, self).post(request, *args, **kwargs)
+            return self.form_valid(form)
+            # return redirect(self.success_url)
         return render(request, self.template_name, {"form": form})
 
 
 class SongList(LoginRequiredMixin,ListView):
-    model = Song
+    # model = Song
     template_name = "song_list.html"
     context_object_name = 'songs'
     queryset = Song.objects.filter(is_deleted=False)
@@ -74,7 +75,7 @@ class SongList(LoginRequiredMixin,ListView):
         if Favourite.objects.filter(user=self.request.user).exists():
             song_obj = Favourite.objects.filter(user=self.request.user)
             song_id_list = []
-            for song in song_obj.songs.all():
+            for song in song_obj.first().songs.all():
                 song_id_list.append(song.id)
             context["song_id_list"] = song_id_list
         return context
@@ -115,21 +116,22 @@ class AddToFavourite(CreateView):
     model = Favourite
 
     def post(self, request, *args, **kwargs):
-        song_id = self.request.POST.get('song_id')
+        # breakpoint()
+        song_id = self.request.POST.get("song_id")
         obj, create = Favourite.objects.get_or_create(user=self.request.user)
         if obj.songs.filter(id=song_id).exists():
             obj.songs.remove(Song.objects.get(id=song_id))
             context = {
-                "status": True,
+                "is_added": False,
                 "message": "Song Removed!",
-                "song_id": song_id
+                "song_id": song_id,
             }
         else:
             obj.songs.add(Song.objects.get(id=song_id))
             context = {
-                "status": True,
+                "is_added": True,
                 "message": "Song Added!",
-                "song_id": song_id
+                "song_id": song_id,
             }
         obj.save()
         return JsonResponse(context)
