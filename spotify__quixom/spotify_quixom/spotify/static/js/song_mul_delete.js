@@ -11,7 +11,7 @@ $(document).ready(function () {
     });
 
     $(".delete_master").on("click", function () {
-        sendDeleteRequest()
+        sendDeleteRequest(select_ids)
     })
 
     // if user one checkbox unselectd then all checkbox unselected.
@@ -35,16 +35,16 @@ $(document).ready(function () {
         });
     }
 
-
-    function sendDeleteRequest() {
-        console.log("+=================", select_ids)
+        function sendDeleteRequest(select_ids) {
+        
+        console.log("songDeleteURL",songDeleteURL);
         $.ajax({
-            url: songListURL,
+            url: songDeleteURL,
             type: 'POST',
             headers: { "X-CSRFToken": csrf_token },
             data: { checkbox_ids: select_ids },
             success: function (response) {
-                location.reload(true);
+                window.location.reload()
 
             },
             error: function (error) {
@@ -77,26 +77,25 @@ $(document).ready(function () {
         window.location = $(this).attr('href')
     })
 })
-function addFav(song_id) {
+function addFav(song_id,obj) {
     const table = $("#song-table")
     const tBody = table.find('tbody > tr')
+    console.log("this",obj.children[0].style.color)
     $.ajax({
         url: favSongURL,
         type: 'POST',
         headers: { "X-CSRFToken": csrf_token },
         data: { "song_id": song_id },
         success: function (response) {
-            tBody.each((index, tr) => {
-                console.log("+++++++++++",tr)
-//                s_id = tr.attr("song_id")
-//                if (response.is_added) {
-//                    if (response.song_id == s_id) {
-//
-//                    }
-//                } else {
-//
-//                }
-            })
+            if (obj.children[0].style.color){
+                obj.innerHTML ='<i class="fa fa-heart-o fa-2x" aria-hidden="true"></i>'
+
+            }else{
+                obj.innerHTML ='<i class="fa fa-heart fa-2x fav" style="color:red;" aria-hidden="true" ></i>'
+
+            }
+            
+        
         }
     })
 }

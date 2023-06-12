@@ -83,3 +83,9 @@ class UpdatePlayListForm(forms.ModelForm):
             visible.field.widget.attrs['class'] = 'form-control'
         for field in self.fields:
             self.fields[field].required = True
+
+
+class AddToFavouriteForm(forms.ModelForm):
+    class Meta:
+        model = PlayList
+        fields = ["name"]

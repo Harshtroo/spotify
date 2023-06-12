@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, CreateView, ListView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
-from .form import SignUpForm, LoginForm, SongForm, CreatePlayListForm, UpdatePlayListForm
+from .form import SignUpForm, LoginForm, SongForm, CreatePlayListForm, UpdatePlayListForm,AddToFavouriteForm
 from .models import User, Song, Favourite, PlayList
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -116,7 +116,6 @@ class AddToFavourite(CreateView):
     model = Favourite
 
     def post(self, request, *args, **kwargs):
-        # breakpoint()
         song_id = self.request.POST.get("song_id")
         obj, create = Favourite.objects.get_or_create(user=self.request.user)
         if obj.songs.filter(id=song_id).exists():
@@ -137,7 +136,7 @@ class AddToFavourite(CreateView):
         return JsonResponse(context)
 
 
-class LoginUserFavouriteSong(ListView):
+class FavouriteList(ListView):
     model = Favourite
     template_name = 'favorite_list.html'
 
@@ -199,3 +198,24 @@ class DeletePlayList(DeleteView):
     def post(self, request, *args, **kwargs):
         PlayList.objects.filter(id=kwargs["pk"]).delete()
         return HttpResponseRedirect(self.success_url)
+
+
+class AddToPlaylist(LoginRequiredMixin, TemplateView):
+    form_class = AddToFavouriteForm
+    template_name = "add_to_playlist.html"
+    print("hello")
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     song_id = self.request.GET.get("song_id")
+    #     context["song"] = get_object_or_404(Song, id=song_id)
+    #     context["playlists"] = PlayList.objects.filter(user=self.request.user)
+    #     return context
+
+    # def post(self, request, *args, **kwargs):
+    #     song_id = self.request.POST.get("song_id")
+    #     playlist_id = self.request.POST.get("playlist_id")
+    #     playlist = get_object_or_404(PlayList, id=playlist_id, user=self.request.user)
+    #     playlist.songs.add(Song.objects.get(id=song_id))
+    #     messages.success(request, "Song added to playlist successfully.")
+    #     return redirect("song_list")

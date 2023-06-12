@@ -9,7 +9,7 @@
 </div>
 {% endfor %}
 
-<a type="button" class="btn btn-primary">Add to Playlist</a>
+<a type="button" class="btn btn-primary"  href="{% url 'add_song_playlist' %}">Add to Playlist</a>
 
 <button type="button" class="btn_delete delete_master">Delete</button>
 <table class="table table-bordered" id="song-table" align="center">
@@ -36,13 +36,11 @@
 
       <td id="fav">
         {% if song.id in song_id_list %}
-        <a id="favourite" onclick="addFav({{ song.id }})">
-          <i class="fa fa-heart fa-2x fav" style="color:red;" aria-hidden="true" href="{% url 'song_fav' %}">
-
-          </i>
+        <a id="favourite" onclick="addFav({{ song.id }},this)">
+          <i class="fa fa-heart fa-2x fav" style="color:red;" aria-hidden="true" href="{% url 'song_fav' %}"></i>
         </a>
         {% else %}
-        <a id="unfavourite" onclick="addFav({{ song.id }})">
+        <a id="unfavourite" onclick="addFav({{ song.id }},this)">
           <i class="fa fa-heart-o fa-2x" aria-hidden="true"></i>
         </a>
         {% endif %}
@@ -95,9 +93,7 @@
 
 
 <script>
-  {% for songs in song %}
-  var songListURL = "{% url 'song_delete' songs.id %}"
-  {% endfor %}
+  var songDeleteURL = "{% url 'song_delete' %}" 
   var csrf_token = "{{csrf_token}}"
 
   var favSongURL = "{% url 'song_fav' %}"
