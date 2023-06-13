@@ -71,6 +71,31 @@ $(document).ready(function () {
     $(document).on("click", "#btn_edit", function () {
         window.location = $(this).attr('href')
     })
+
+    //user click close button
+    $(".close_btn").on("click",function(){
+        $(".modal").modal("hide")
+    })
+
+    //multiple select song and add to playlist
+    $("#add_playlist").on("click",function(){
+        console.log("select_ids==",select_ids);
+        console.log("id_playlist====",$("#id_playlist").val())
+        $.ajax({
+            url: addtoPlaylistURL,
+            type: 'POST',
+            headers: { "X-CSRFToken": csrf_token },
+            data: { "selected_ids": select_ids,
+                    "id_playlist": $("#id_playlist").val()},
+            success: function (response) {
+                window.location.reload()  
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        })
+    })
+
 })
 
 function addFav(song_id,obj) {
@@ -87,7 +112,12 @@ function addFav(song_id,obj) {
             }
         }
     })
+    
+   
 }
+
+
+
 
 //add to playlist button event
 $(".btn-playlist").on("click",function(){

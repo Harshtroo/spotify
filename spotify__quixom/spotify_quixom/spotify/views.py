@@ -95,7 +95,15 @@ class SongList(LoginRequiredMixin, ListView):
             for song in song_obj.first().songs.all():
                 song_id_list.append(song.id)
             context["song_id_list"] = song_id_list
+            context["addplaylistform"] = AddToFavouriteForm
         return context
+
+    def post(self,request,*args,**kwargs):
+        form = AddToFavouriteForm(self.request.POST or None)
+        print()
+        # if form.is_valid():
+            # super(SongUpdate, self).post(request, *args, **kwargs)
+            
 
 
 class SongUpdate(SuccessMessageMixin, UpdateView):
@@ -203,16 +211,15 @@ class UpdatePlayList(UpdateView):
     success_url = reverse_lazy("show_playlist")
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(self.request.POST or None)
+        form = self.form_class(self.request.POST,instance=self.get_object())
         if form.is_valid():
-            super(UpdatePlayList, self).post(request, *args, **kwargs)
+            form.save()
             return redirect(self.success_url)
         return render(request, self.template_name, {"form": form})
 
 
 class DeletePlayList(DeleteView):
     model = PlayList
-    # template_name = "playlist_confirm_delete.html"
     success_url = reverse_lazy("show_playlist")
 
     def post(self, request, *args, **kwargs):
@@ -222,37 +229,22 @@ class DeletePlayList(DeleteView):
 
 class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
     form_class = AddToFavouriteForm
-    template_name = "add_to_playlist.html"
     success_url = reverse_lazy("show_playlist")
 
-    def get(self, request, *args, **kwargs):
-        select_ids = self.request.GET.get('ids')
-        print("select_ids",select_ids)
-        return render(request,'add_to_playlist.html')
-
     def post(self, request, *args, **kwargs):
-        selected_ids = request.POST.getlist("checkbox_ids[]")
-        print("selected_ids======",selected_ids)
-        # select_playlist = PlayList.objects.filter(user=self.request.user)
-        form = self.form_class(self.request.POST or None)
-        if form.is_valid():
-            return self.form_valid(form)
-        # print("form",form)
-        # print("select_playlist",select_playlist)
-        return render(request, self.template_name,{"form":form})
+        selected_ids = request.POST.getlist("selected_ids[]")
+        id_playlist = request.POST.get("id_playlist")
+        
+
+        playlist = get_object_or_404(PlayList,id=id_playlist)
+        songs = Song.objects.filter(id__in=selected_ids)
+
+        for song in songs:
+            if song in PlayList.objects.all():
+                messages.warning(request, f"The song '{song.name}' is already in the playlist.")
+            playlist.songs.add(*songs)
+            return redirect(self.success_url)
+        return render(request, self.template_name)
 
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     song_id = self.request.GET.get("song_id")
-    #     print("song_id======", song_id)
-    #     context["song"] = get_object_or_404(Song, id=song_id)
-    #     context["playlists"] = PlayList.objects.filter(user=self.request.user)
-    #     return context
-
-    #
-    # def post(self, request, *args, **kwargs):
-    #     form = self.form_class(self.request.POST or None)
-    #     if form.is_valid():
-    #         return self.form_valid(form)
-    #     return render(request, self.template_name, {"form": form})
+    

@@ -15,23 +15,22 @@
     <div class="modal-header">
     <h5 class="modal-title" id="staticBackdropLabel" align="center">Songs add to playlist</h5>
     </div>
-<!--                  <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2" align="center">Songs add to playlist</h3>-->
           <form class="px-md-2" method="POST" id="my-form">
             {% csrf_token %}
 
             <div class="form-outline mb-4">
               <div class="form-outline datepicker">
                 <label for="exampleDatepicker1" class="form-label">playlist name</label>
-                {{form.playlist}}
-                {% for error in form.playlist.errors %}
+                {{addplaylistform.playlist}}
+                {% for error in addplaylistform.playlist.errors %}
                 <div class="alert alert-danger">
                   <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
               </div>
             </div>
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="add_playlist" class="btn btn-success btn-lg mb-1" >Submit</button>
             {% for error in form.non_field_errors %}
             <div class="alert alert-danger">
               <strong>{{ error|escape }}</strong>
@@ -123,13 +122,12 @@
 </nav>
 {% endif %}
 
-
-
 <script>
   var songDeleteURL = "{% url 'song_delete' %}" 
   var csrf_token = "{{csrf_token}}"
   var favSongURL = "{% url 'song_fav' %}"
   var addtoPlaylistURL = "{% url 'add_song_playlist' %}"
+  var songListURL = "{% url 'song_list' %}"
 </script>
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 
