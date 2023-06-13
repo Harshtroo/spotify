@@ -5,11 +5,10 @@ from django.conf import settings
 from django.views.generic.base import TemplateView
 
 
-
-
 def bad(request):
-    """ Simulates a server error """
+    """Simulates a server error"""
     1 / 0
+
 
 urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
@@ -19,7 +18,7 @@ urlpatterns = [
 urlpatterns = [
     path("bad/", bad),
     path(f"{settings.ADMIN_URL}/", admin.site.urls),
-    path('',include('spotify.urls')),
+    path("", include("spotify.urls")),
 ]
 
 if settings.DEBUG:
@@ -30,7 +29,9 @@ if settings.DEBUG:
     ]
 
     from django.conf.urls.static import static
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     import debug_toolbar
+
     urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]

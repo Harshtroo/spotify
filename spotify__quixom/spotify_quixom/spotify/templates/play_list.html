@@ -25,7 +25,7 @@
                 <div class="form-outline mb-4">
                   <label class="form-label" for="form3Example1q">Playlist name </label>
                   {{form.name}}
-                  {% for error in form.list_name.errors %}
+                  {% for error in form.name.errors %}
                   <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>
                   </div>

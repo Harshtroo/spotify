@@ -7,12 +7,15 @@ from django.conf import settings
 
 class User(AbstractUser):
     "this model use create user"
-    mobile_number = models.IntegerField(validators=[MaxValueValidator(9999999999)], default=0)
+    mobile_number = models.IntegerField(
+        validators=[MaxValueValidator(9999999999)], default=0
+    )
     role = models.CharField(max_length=10, choices=Role.choices(), null=True)
 
 
 class Singer(models.Model):
     """this models use create singer"""
+
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -34,7 +37,7 @@ class Song(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def soft_delete(self):
-        '''soft delete function'''
+        """soft delete function"""
         self.is_deleted = True
         self.save()
 
@@ -55,3 +58,6 @@ class PlayList(models.Model):
     def __str__(self):
         return self.name
 
+
+class AddToPlayList(models.Model):
+    playlist = models.ForeignKey(PlayList, on_delete=models.CASCADE)

@@ -9,7 +9,40 @@
 </div>
 {% endfor %}
 
-<a type="button" class="btn btn-primary"  href="{% url 'add_song_playlist' %}">Add to Playlist</a>
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="staticBackdropLabel" align="center">Songs add to playlist</h5>
+    </div>
+<!--                  <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2" align="center">Songs add to playlist</h3>-->
+          <form class="px-md-2" method="POST" id="my-form">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label">playlist name</label>
+                {{form.playlist}}
+                {% for error in form.playlist.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+
+</div>
+<button type="button" class="btn btn-primary btn-playlist" data-modal-iframe="add_to_playlist.html" >Add to Playlist</button>
 
 <button type="button" class="btn_delete delete_master">Delete</button>
 <table class="table table-bordered" id="song-table" align="center">
@@ -95,9 +128,8 @@
 <script>
   var songDeleteURL = "{% url 'song_delete' %}" 
   var csrf_token = "{{csrf_token}}"
-
   var favSongURL = "{% url 'song_fav' %}"
-
+  var addtoPlaylistURL = "{% url 'add_song_playlist' %}"
 </script>
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 

@@ -59,7 +59,7 @@
                 {% if form.instance.id %}
                 <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
                 {% else %}
-                <button type="submit" class="btn btn-success btn-lg mb-1" onclick="createSong()">Submit</button>
+                <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
                 {% endif %}
                 {% for error in form.non_field_errors %}
                 <div class="alert alert-danger">
@@ -73,11 +73,6 @@
       </div>
     </div>
 </section>
-<script>
-  var csrf_token = "{{csrf_token}}"
-  var createsong = "{% url 'create_song' %}"
-</script>
-<script src="{% static 'js/create_song.js' %}"></script>
 
 
 

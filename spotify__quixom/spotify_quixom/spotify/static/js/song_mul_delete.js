@@ -27,7 +27,6 @@ $(document).ready(function () {
         deleteDisable()
     })
 
-
     function getSelectedIDs() {
         select_ids = []
         $(".select_row:checked").each(function () {
@@ -35,23 +34,21 @@ $(document).ready(function () {
         });
     }
 
-        function sendDeleteRequest(select_ids) {
-        
-        console.log("songDeleteURL",songDeleteURL);
-        $.ajax({
-            url: songDeleteURL,
-            type: 'POST',
-            headers: { "X-CSRFToken": csrf_token },
-            data: { checkbox_ids: select_ids },
-            success: function (response) {
-                window.location.reload()
-
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
+    function sendDeleteRequest(select_ids) {
+    $.ajax({
+        url: songDeleteURL,
+        type: 'POST',
+        headers: { "X-CSRFToken": csrf_token },
+        data: { checkbox_ids: select_ids },
+        success: function (response) {
+            window.location.reload()
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
     }
+
 
     $(".btn_delete").prop("disabled", true);
     function deleteDisable() {
@@ -71,16 +68,12 @@ $(document).ready(function () {
             $(".btn_edit").prop("disabled", false);
         }
     }
-
-
     $(document).on("click", "#btn_edit", function () {
         window.location = $(this).attr('href')
     })
 })
+
 function addFav(song_id,obj) {
-    const table = $("#song-table")
-    const tBody = table.find('tbody > tr')
-    console.log("this",obj.children[0].style.color)
     $.ajax({
         url: favSongURL,
         type: 'POST',
@@ -89,13 +82,24 @@ function addFav(song_id,obj) {
         success: function (response) {
             if (obj.children[0].style.color){
                 obj.innerHTML ='<i class="fa fa-heart-o fa-2x" aria-hidden="true"></i>'
-
             }else{
                 obj.innerHTML ='<i class="fa fa-heart fa-2x fav" style="color:red;" aria-hidden="true" ></i>'
-
             }
-            
-        
         }
     })
 }
+
+//add to playlist button event
+$(".btn-playlist").on("click",function(){
+    $(".modal").modal("show")
+    })
+$('#close').on('click', function () {
+    $('.center').hide();
+    $('#show').show();
+})
+
+//$('.btn-playlist').on('click', function (event) {
+//    console.log("hello")
+//    $(".center").show();
+//})
+//
