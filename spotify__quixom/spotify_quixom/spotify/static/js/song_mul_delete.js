@@ -60,8 +60,12 @@ $(document).ready(function () {
         }
     }
 
+    //handle edit button
     function handleEditButton() {
         var selectedCount = $(".select_row:checked").length;
+        console.log("selectedCount=====",select_ids)
+//        console.log("edit_button=====",$(".btn_edit").val())
+//        console.log("============",obj)
         if (selectedCount > 1) {
             $(".btn_edit").prop("disabled", true);
         } else {
@@ -72,15 +76,13 @@ $(document).ready(function () {
         window.location = $(this).attr('href')
     })
 
-    //user click close button
+    //user click close button inn modal
     $(".close_btn").on("click",function(){
         $(".modal").modal("hide")
     })
 
     //multiple select song and add to playlist
     $("#add_playlist").on("click",function(){
-        console.log("select_ids==",select_ids);
-        console.log("id_playlist====",$("#id_playlist").val())
         $.ajax({
             url: addtoPlaylistURL,
             type: 'POST',
@@ -95,6 +97,25 @@ $(document).ready(function () {
             }
         })
     })
+
+//    multipal song select and create playlist and add song that playlist function
+    $("#create_playlist").on("click",function(){
+        console.log("select_ids==",select_ids);
+        $.ajax({
+            url: mulSongCreatePlaylist,
+            type: 'POST',
+            headers: { "X-CSRFToken": csrf_token },
+            data: { "selected_ids": select_ids,
+                      "form":$("#id_name").val()},
+            success: function (response) {
+                window.location.reload()
+            },
+
+        })
+    })
+
+
+
 
 })
 
@@ -112,24 +133,20 @@ function addFav(song_id,obj) {
             }
         }
     })
-    
-   
 }
-
-
-
 
 //add to playlist button event
 $(".btn-playlist").on("click",function(){
-    $(".modal").modal("show")
+    $("#staticBackdrop").modal("show")
     })
 $('#close').on('click', function () {
     $('.center').hide();
     $('#show').show();
 })
+$(".create_btn").on("click",function(){
 
-//$('.btn-playlist').on('click', function (event) {
-//    console.log("hello")
-//    $(".center").show();
-//})
-//
+    $("#create_playlist_modal").modal("show")
+    $("#create_playlist_modal").css('zIndex', '2000')
+//    $(this).find("#create_playlist_modal").focus()
+})
+

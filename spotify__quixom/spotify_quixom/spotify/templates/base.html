@@ -46,11 +46,7 @@
         </li>
         {% endif %}
 
-        {% if request.user.is_authenticated %}
-        <li class="nav-item">
-          <a class="navbar-brand" aria-current="page" href="{% url 'logout' %}">Logout</a>
-        </li>
-        {% endif %}
+
 
         {% if request.user.is_authenticated %}
         <li class="nav-item">
@@ -80,6 +76,12 @@
         {% if request.user.is_authenticated %}
         <li class="nav-item">
           <a class="navbar-brand" aria-current="page" href="{% url 'show_playlist' %}">Playlist</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'logout' %}">Logout</a>
         </li>
         {% endif %}
       </ul>

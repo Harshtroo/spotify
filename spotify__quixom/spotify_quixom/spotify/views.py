@@ -96,14 +96,8 @@ class SongList(LoginRequiredMixin, ListView):
                 song_id_list.append(song.id)
             context["song_id_list"] = song_id_list
             context["addplaylistform"] = AddToFavouriteForm
+            context["createplaylistform"] = CreatePlayListForm
         return context
-
-    def post(self,request,*args,**kwargs):
-        form = AddToFavouriteForm(self.request.POST or None)
-        print()
-        # if form.is_valid():
-            # super(SongUpdate, self).post(request, *args, **kwargs)
-            
 
 
 class SongUpdate(SuccessMessageMixin, UpdateView):
@@ -234,11 +228,9 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
     def post(self, request, *args, **kwargs):
         selected_ids = request.POST.getlist("selected_ids[]")
         id_playlist = request.POST.get("id_playlist")
-        
-
         playlist = get_object_or_404(PlayList,id=id_playlist)
         songs = Song.objects.filter(id__in=selected_ids)
-
+        print("sngs===",songs)
         for song in songs:
             if song in PlayList.objects.all():
                 messages.warning(request, f"The song '{song.name}' is already in the playlist.")
@@ -246,5 +238,20 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
             return redirect(self.success_url)
         return render(request, self.template_name)
 
+
+class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
+    model = PlayList
+    form_class = CreatePlayListForm
+    success_url = reverse_lazy("show_playlist")
+
+    def post(self, request, *args, **kwargs):
+        selected_ids = request.POST.getlist("selected_ids[]")
+        songs = Song.objects.filter(id__in=selected_ids)
+        playlist_name = request.POST.get("form")
+        # if PlayList.objects.filter(name=playlist_name).exists():
+        #     messages.warning(request,"this playlist name already exists")
+        create_playlist = PlayList.objects.create(name=playlist_name,user=self.request.user)
+        create_playlist.songs.add(*selected_ids)
+        return redirect(self.success_url)
 
     

@@ -9,6 +9,48 @@
 </div>
 {% endfor %}
 
+<!--This is add to playlist model in create playlist button modal-->
+<div class="modal fade" id="create_playlist_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content" id="style_modal">
+    <div class="modal-header">
+    <h5 class="modal-title" id="staticBackdropLabel1" align="center">Create playlist</h5>
+    </div>
+          <form class="px-md-2" method="POST" id="my-form1">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label">Playlist name</label>
+                {{createplaylistform.name}}
+                {% for error in createplaylistform.name.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="create_playlist" class="btn btn-success btn-lg mb-1" >Submit</button>
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+</div>
+
+
+
+
+
+
+
+<!--This is click on add to playlist that time open modal-->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <div class="modal-dialog">
   <div class="modal-content">
@@ -20,7 +62,7 @@
 
             <div class="form-outline mb-4">
               <div class="form-outline datepicker">
-                <label for="exampleDatepicker1" class="form-label">playlist name</label>
+                <label for="exampleDatepicker1" class="form-label">Playlist name</label>
                 {{addplaylistform.playlist}}
                 {% for error in addplaylistform.playlist.errors %}
                 <div class="alert alert-danger">
@@ -29,8 +71,10 @@
                 {% endfor %}
               </div>
             </div>
+            <button type="button" class="btn btn-primary create_btn">Create playlist</button>
             <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
             <button type="button" id="add_playlist" class="btn btn-success btn-lg mb-1" >Submit</button>
+
             {% for error in form.non_field_errors %}
             <div class="alert alert-danger">
               <strong>{{ error|escape }}</strong>
@@ -39,11 +83,13 @@
           </form>
         </div>
       </div>
-
 </div>
+
 <button type="button" class="btn btn-primary btn-playlist" data-modal-iframe="add_to_playlist.html" >Add to Playlist</button>
 
 <button type="button" class="btn_delete delete_master">Delete</button>
+
+<!--This is a song list html-->
 <table class="table table-bordered" id="song-table" align="center">
 
   <thead>
@@ -83,6 +129,7 @@
   </tbody>
 </table>
 
+<!--This is a song list page pagination-->
 {% if is_paginated %}
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
@@ -128,6 +175,7 @@
   var favSongURL = "{% url 'song_fav' %}"
   var addtoPlaylistURL = "{% url 'add_song_playlist' %}"
   var songListURL = "{% url 'song_list' %}"
+  var mulSongCreatePlaylist = "{% url 'mul_song_create_playlist' %}"
 </script>
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 
