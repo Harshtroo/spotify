@@ -64,8 +64,7 @@ $(document).ready(function () {
     function handleEditButton() {
         var selectedCount = $(".select_row:checked").length;
         console.log("selectedCount=====",select_ids)
-//        console.log("edit_button=====",$(".btn_edit").val())
-//        console.log("============",obj)
+        
         if (selectedCount > 1) {
             $(".btn_edit").prop("disabled", true);
         } else {

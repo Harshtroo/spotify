@@ -230,13 +230,15 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
         id_playlist = request.POST.get("id_playlist")
         playlist = get_object_or_404(PlayList,id=id_playlist)
         songs = Song.objects.filter(id__in=selected_ids)
-        print("sngs===",songs)
+        if len(songs) == 0:
+            messages.warning(request, "Please select at least one song.")
+            return redirect(self.success_url)
+
         for song in songs:
             if song in PlayList.objects.all():
                 messages.warning(request, f"The song '{song.name}' is already in the playlist.")
-            playlist.songs.add(*songs)
-            return redirect(self.success_url)
-        return render(request, self.template_name)
+        playlist.songs.add(*songs)
+        return redirect(self.success_url)
 
 
 class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
@@ -248,8 +250,10 @@ class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
         selected_ids = request.POST.getlist("selected_ids[]")
         songs = Song.objects.filter(id__in=selected_ids)
         playlist_name = request.POST.get("form")
-        # if PlayList.objects.filter(name=playlist_name).exists():
-        #     messages.warning(request,"this playlist name already exists")
+        
+        if PlayList.objects.filter(name=playlist_name).exists():
+            messages.warning(request, "This playlist name already exists.")
+            return redirect(self.success_url)
         create_playlist = PlayList.objects.create(name=playlist_name,user=self.request.user)
         create_playlist.songs.add(*selected_ids)
         return redirect(self.success_url)
