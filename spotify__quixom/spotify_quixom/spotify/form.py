@@ -75,7 +75,7 @@ class CreatePlayListForm(forms.ModelForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
         for field in self.fields:
-            self.fields[field].required = True
+            self.fields['name'].required = True
 
 
 class UpdatePlayListForm(forms.ModelForm):

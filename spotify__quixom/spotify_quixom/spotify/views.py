@@ -229,6 +229,7 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
         selected_ids = request.POST.getlist("selected_ids[]")
         id_playlist = request.POST.get("id_playlist")
         playlist = get_object_or_404(PlayList,id=id_playlist)
+        print("playlist",playlist)
         songs = Song.objects.filter(id__in=selected_ids)
         if len(songs) == 0:
             messages.warning(request, "Please select at least one song.")
@@ -250,7 +251,10 @@ class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
         selected_ids = request.POST.getlist("selected_ids[]")
         songs = Song.objects.filter(id__in=selected_ids)
         playlist_name = request.POST.get("form")
-        
+        print("playlist_name",playlist_name)
+        # if playlist_name == "":
+        #     messages.warning(request, "This field required")
+
         if PlayList.objects.filter(name=playlist_name).exists():
             messages.warning(request, "This playlist name already exists.")
             return redirect(self.success_url)

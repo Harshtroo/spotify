@@ -62,16 +62,18 @@ $(document).ready(function () {
 
     //handle edit button
     function handleEditButton() {
-        var selectedCount = $(".select_row:checked").length;
-        console.log("selectedCount=====",select_ids)
-        
-        if (selectedCount > 1) {
+        var selectedCount = $(".select_row:checked").length
+        if (selectedCount > 0 ) {
             $(".btn_edit").prop("disabled", true);
+            if (selectedCount == 1 ){
+                $("#btn_edit_"+select_ids[0]).prop("disabled", false);
+            }
         } else {
             $(".btn_edit").prop("disabled", false);
         }
     }
-    $(document).on("click", "#btn_edit", function () {
+
+    $(document).on("click", ".btn_edit", function () {
         window.location = $(this).attr('href')
     })
 
@@ -82,6 +84,12 @@ $(document).ready(function () {
 
     //multiple select song and add to playlist
     $("#add_playlist").on("click",function(){
+//        if ($("#id_playlist").value.trim()==""){
+//            alert("this field is required")
+//            $("#play_list").focus()
+//            return false
+//        }
+
         $.ajax({
             url: addtoPlaylistURL,
             type: 'POST',
@@ -89,15 +97,17 @@ $(document).ready(function () {
             data: { "selected_ids": select_ids,
                     "id_playlist": $("#id_playlist").val()},
             success: function (response) {
-                window.location.reload()  
+                window.location.reload()
+//                $("#div-form").html("<h3 style='text-align:center;'>Thank you, for Registering!</h3>");
             },
             error: function (error) {
+                alert(response)
                 console.log(error);
             }
         })
     })
 
-//    multipal song select and create playlist and add song that playlist function
+//    multiple song select and create playlist and add song that playlist function
     $("#create_playlist").on("click",function(){
         console.log("select_ids==",select_ids);
         $.ajax({

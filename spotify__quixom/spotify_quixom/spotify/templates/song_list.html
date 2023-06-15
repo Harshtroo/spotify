@@ -46,10 +46,6 @@
 
 
 
-
-
-
-
 <!--This is click on add to playlist that time open modal-->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <div class="modal-dialog">
@@ -62,8 +58,9 @@
 
             <div class="form-outline mb-4">
               <div class="form-outline datepicker">
-                <label for="exampleDatepicker1" class="form-label">Playlist name</label>
+                <label for="exampleDatepicker1" class="form-label" id="play_list">Playlist name</label>
                 {{addplaylistform.playlist}}
+
                 {% for error in addplaylistform.playlist.errors %}
                 <div class="alert alert-danger">
                   <strong>{{ error|escape }}</strong>
@@ -104,12 +101,12 @@
   </thead>
   <tbody>
     {% for song in songs %}
-    <tr song_id={{song.id}} id="table">
+    <tr song_id={{song.id}} id="table_{{song.id}}">
       <th scope="row">{{forloop.counter}}</th>
       <th><input type="checkbox" class="select_row" name="checkbox" value="{{song.id}}"></th>
       <td>{{song.name}}</td>
       <td>{{song.singer_name}}</td>
-      <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' song.id %}" id="btn_edit">Edit</button>
+      <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' song.id %}" id="btn_edit_{{song.id}}">Edit</button>
       </td>
 
       <td id="fav">
