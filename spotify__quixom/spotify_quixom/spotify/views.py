@@ -252,9 +252,7 @@ class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
         songs = Song.objects.filter(id__in=selected_ids)
         playlist_name = request.POST.get("form")
         print("playlist_name",playlist_name)
-        # if playlist_name == "":
-        #     messages.warning(request, "This field required")
-
+        
         if PlayList.objects.filter(name=playlist_name).exists():
             messages.warning(request, "This playlist name already exists.")
             return redirect(self.success_url)

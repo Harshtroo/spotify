@@ -16,6 +16,7 @@
     <div class="modal-header">
     <h5 class="modal-title" id="staticBackdropLabel1" align="center">Create playlist</h5>
     </div>
+    
           <form class="px-md-2" method="POST" id="my-form1">
             {% csrf_token %}
 
@@ -66,6 +67,8 @@
                   <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
+              
+              
               </div>
             </div>
             <button type="button" class="btn btn-primary create_btn">Create playlist</button>
