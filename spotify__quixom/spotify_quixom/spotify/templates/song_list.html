@@ -16,10 +16,8 @@
     <div class="modal-header">
     <h5 class="modal-title" id="staticBackdropLabel1" align="center">Create playlist</h5>
     </div>
-    
           <form class="px-md-2" method="POST" id="my-form1">
             {% csrf_token %}
-
             <div class="form-outline mb-4">
               <div class="form-outline datepicker">
                 <label for="exampleDatepicker1" class="form-label">Playlist name</label>
@@ -45,6 +43,54 @@
       </div>
 </div>
 
+<!--This is click on remove to playlist that time open modal-->
+<div class="modal fade" id="remove_playlist" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="remove_playlist_heading" align="center">Songs remove to playlist</h5>
+    </div>
+          <form class="px-md-2" method="POST">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label" id="remove_playlist_lab">Select playlist </label>
+                {{addplaylistform.playlist}}
+
+                {% for error in addplaylistform.playlist.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="remove_playlist_submit" class="btn btn-success btn-lg mb-1" >Submit</button>
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <!--This is click on add to playlist that time open modal-->
@@ -59,7 +105,7 @@
 
             <div class="form-outline mb-4">
               <div class="form-outline datepicker">
-                <label for="exampleDatepicker1" class="form-label" id="play_list">Playlist name</label>
+                <label for="exampleDatepicker1" class="form-label" id="play_list">Select playlist </label>
                 {{addplaylistform.playlist}}
 
                 {% for error in addplaylistform.playlist.errors %}
@@ -67,8 +113,6 @@
                   <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
-              
-              
               </div>
             </div>
             <button type="button" class="btn btn-primary create_btn">Create playlist</button>
@@ -85,7 +129,8 @@
       </div>
 </div>
 
-<button type="button" class="btn btn-primary btn-playlist" data-modal-iframe="add_to_playlist.html" >Add to Playlist</button>
+<button type="button" class="btn btn-primary btn-playlist" >Add to Playlist</button>
+<button type="button" class="btn btn-primary btn-remove-playlist" >Remove to Playlist</button>
 
 <button type="button" class="btn_delete delete_master">Delete</button>
 
@@ -135,7 +180,6 @@
   <ul class="pagination justify-content-center">
 
     {% if page_obj.has_previous %}
-
     <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
     {% else %}
     <li class="page-item disabled">
@@ -145,24 +189,20 @@
 
     {% for i in paginator.page_range %}
     {% if page_obj.number == i %}
-
     <li class="page-item active" aria-current="page">
       <span class="page-link">
         {{ i }}
         <span class="sr-only">(current)</span>
       </span>
     </li>
-
     {% else %}
     <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
     {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-
     <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
     {% else %}
-
     <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a></li>
     {% endif %}
   </ul>
@@ -176,6 +216,7 @@
   var addtoPlaylistURL = "{% url 'add_song_playlist' %}"
   var songListURL = "{% url 'song_list' %}"
   var mulSongCreatePlaylist = "{% url 'mul_song_create_playlist' %}"
+  var mulSongRemovePlaylist = "{% url 'mul_remove_playlist' %}"
 </script>
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 

@@ -21,4 +21,5 @@ urlpatterns = [
     path("delete_playlist/<int:pk>",views.DeletePlayList.as_view(),name="delete_playlist"),
     path("add_song_playlist/", views.AddToPlaylist.as_view(), name="add_song_playlist"),
     path("mul_song_create_playlist/",views.MulSongCreatePlaylist.as_view(),name="mul_song_create_playlist"),
+    path("mul_remove_playlist/",views.RemovePlayListSongs.as_view(),name="mul_remove_playlist"),
 ]

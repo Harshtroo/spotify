@@ -7,7 +7,7 @@ $(document).ready(function () {
         getSelectedIDs();
         handleEditButton();
         deleteDisable()
-
+        addToPlayListDisable()
     });
 
     $(".delete_master").on("click", function () {
@@ -25,6 +25,7 @@ $(document).ready(function () {
         getSelectedIDs()
         handleEditButton()
         deleteDisable()
+        addToPlayListDisable()
     })
 
     function getSelectedIDs() {
@@ -53,12 +54,15 @@ $(document).ready(function () {
     $(".btn_delete").prop("disabled", true);
     function deleteDisable() {
         var selectedCount = $(".select_row:checked").length;
+
         if (selectedCount == 0) {
             $(".btn_delete").prop("disabled", true);
         } else {
             $(".btn_delete").prop("disabled", false);
         }
     }
+
+
 
     //handle edit button
     function handleEditButton() {
@@ -72,7 +76,6 @@ $(document).ready(function () {
             $(".btn_edit").prop("disabled", false);
         }
     }
-
     $(document).on("click", ".btn_edit", function () {
         window.location = $(this).attr('href')
     })
@@ -84,12 +87,6 @@ $(document).ready(function () {
 
     //multiple select song and add to playlist
     $("#add_playlist").on("click",function(){
-//        if ($("#id_playlist").value.trim()==""){
-//            alert("this field is required")
-//            $("#play_list").focus()
-//            return false
-//        }
-
         $.ajax({
             url: addtoPlaylistURL,
             type: 'POST',
@@ -98,13 +95,33 @@ $(document).ready(function () {
                     "id_playlist": $("#id_playlist").val()},
             success: function (response) {
                 window.location.reload()
-//                $("#div-form").html("<h3 style='text-align:center;'>Thank you, for Registering!</h3>");
             },
             error: function (error) {
-                alert(response)
+                alert("places select any one playlist")
                 console.log(error);
+
             }
         })
+    })
+
+    // multiple song remove to playlist
+    $("#remove_playlist_submit").on("click",function(event) {
+       console.log("select_ids",select_ids)
+       event.preventDefault()
+//       debugger
+       $.ajax({
+            url: mulSongRemovePlaylist,
+            type: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+            data: { "selected_ids": select_ids,
+                    "id_playlist": $("#id_playlist").val()},
+            success: function (response) {
+                window.location.reload()
+            },
+            error:function (error){
+                console.log(error)
+            }
+       })
     })
 
 //    multiple song select and create playlist and add song that playlist function
@@ -119,13 +136,11 @@ $(document).ready(function () {
             success: function (response) {
                 window.location.reload()
             },
-
+            error: function (error){
+                console.log(error)
+            }
         })
     })
-
-
-
-
 })
 
 function addFav(song_id,obj) {
@@ -145,17 +160,47 @@ function addFav(song_id,obj) {
 }
 
 //add to playlist button event
+$(".btn-playlist").prop("disabled", true);
+    function addToPlayListDisable(){
+        var selectedCount = $(".select_row:checked").length;
+        console.log("selectedCount",selectedCount)
+            if (selectedCount == 0) {
+                $(".btn-playlist").prop("disabled", true);
+            } else {
+                $(".btn-playlist").prop("disabled", false);
+            }
+    }
+
+//show add playlist modal open
 $(".btn-playlist").on("click",function(){
     $("#staticBackdrop").modal("show")
-    })
+})
+
 $('#close').on('click', function () {
     $('.center').hide();
     $('#show').show();
 })
-$(".create_btn").on("click",function(){
 
+// show multiple song and that create playlist
+$(".create_btn").on("click",function(){
     $("#create_playlist_modal").modal("show")
     $("#create_playlist_modal").css('zIndex', '2000')
-//    $(this).find("#create_playlist_modal").focus()
 })
+
+//show remove to playlist button on click open the modal
+$(".btn-remove-playlist").on("click",function(){
+    $("#remove_playlist").modal("show")
+})
+
+//
+//$(".btn-remove-playlist").prop("disabled", true);
+//    function addToPlayListDisable(){
+//        var selectedCount = $(".select_row:checked").length;
+//            if (selectedCount == 0) {
+//                $(".btn-remove-playlist").prop("disabled", true);
+//            } else {
+//                $(".btn-remove-playlist").prop("disabled", false);
+//            }
+//    }
+
 

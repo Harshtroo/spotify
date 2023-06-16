@@ -228,6 +228,8 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
     def post(self, request, *args, **kwargs):
         selected_ids = request.POST.getlist("selected_ids[]")
         id_playlist = request.POST.get("id_playlist")
+        # if id_playlist == '':
+        #     messages.warning(request,"please select any one playlist")
         playlist = get_object_or_404(PlayList,id=id_playlist)
         print("playlist",playlist)
         songs = Song.objects.filter(id__in=selected_ids)
@@ -251,13 +253,29 @@ class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
         selected_ids = request.POST.getlist("selected_ids[]")
         songs = Song.objects.filter(id__in=selected_ids)
         playlist_name = request.POST.get("form")
-        print("playlist_name",playlist_name)
-        
-        if PlayList.objects.filter(name=playlist_name).exists():
+
+        if PlayList.objects.filter(name__icontains=playlist_name).exists():
             messages.warning(request, "This playlist name already exists.")
             return redirect(self.success_url)
         create_playlist = PlayList.objects.create(name=playlist_name,user=self.request.user)
         create_playlist.songs.add(*selected_ids)
         return redirect(self.success_url)
 
-    
+
+class RemovePlayListSongs(DeleteView):
+    form_class = AddToFavouriteForm
+    success_url = reverse_lazy("show_playlist")
+
+    def post(self, request, *args, **kwargs):
+        selected_ids =  request.POST.getlist("selected_ids[]")
+        id_playlist = request.POST.get("id_playlist")
+
+        songs = Song.objects.filter(id__in=selected_ids)
+        playlist = get_object_or_404(PlayList,id=id_playlist)
+
+        # for song in songs:
+        #     if song in PlayList.objects.all():
+        #         messages.warning(request, f"The song '{song.name}' is already in the playlist.")
+        for value in selected_ids:
+            playlist.songs.remove(value)
+        return redirect(self.success_url)
