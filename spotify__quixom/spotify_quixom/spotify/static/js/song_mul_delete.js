@@ -8,6 +8,7 @@ $(document).ready(function () {
         handleEditButton();
         deleteDisable()
         addToPlayListDisable()
+        removeToPlayListDisable()
     });
 
     $(".delete_master").on("click", function () {
@@ -26,6 +27,7 @@ $(document).ready(function () {
         handleEditButton()
         deleteDisable()
         addToPlayListDisable()
+        removeToPlayListDisable()
     })
 
     function getSelectedIDs() {
@@ -97,7 +99,8 @@ $(document).ready(function () {
                 window.location.reload()
             },
             error: function (error) {
-                alert("places select any one playlist")
+                // alert("places select any one playlist")
+                
                 console.log(error);
 
             }
@@ -193,14 +196,45 @@ $(".btn-remove-playlist").on("click",function(){
 })
 
 //
-//$(".btn-remove-playlist").prop("disabled", true);
-//    function addToPlayListDisable(){
-//        var selectedCount = $(".select_row:checked").length;
-//            if (selectedCount == 0) {
-//                $(".btn-remove-playlist").prop("disabled", true);
-//            } else {
-//                $(".btn-remove-playlist").prop("disabled", false);
-//            }
-//    }
+$(".btn-remove-playlist").prop("disabled", true);
+   function removeToPlayListDisable(){
+       var selectedCount = $(".select_row:checked").length;
+           if (selectedCount == 0) {
+               $(".btn-remove-playlist").prop("disabled", true);
+           } else {
+               $(".btn-remove-playlist").prop("disabled", false);
+           }
+   }
 
 
+// if user click on add to playlist button and user not select any playlist that time show error 
+
+// document.getElementById("add_playlist").addEventListener("click",function(){
+//     // var playlistname = $("#play_list").val()
+//     if (!document.getElementById("play_list").value){
+//         document.getElementById("error-message").innerHTML = "please select any playlist."
+//         document.getElementById("error-message").style.display= "block"
+//         return
+//     }else {
+//         document.getElementById("add_playlist_form").submit()
+//         // $("#add_playlist_form").submit()
+//     }
+// })
+
+
+
+
+
+
+
+
+// $(document).ready(function () {
+//     $(".btn-playlist").click(function() {
+//         var playlistname = $("#play_list").val()
+//         if(!playlistname){
+//             $("#playlist-error").text("please select any one playlist").removeClass('d-none')
+//             return
+//         }
+//         $("add_playlist_form").submit()
+//     })
+// })
