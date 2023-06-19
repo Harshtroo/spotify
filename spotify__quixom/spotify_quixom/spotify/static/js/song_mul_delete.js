@@ -56,15 +56,12 @@ $(document).ready(function () {
     $(".btn_delete").prop("disabled", true);
     function deleteDisable() {
         var selectedCount = $(".select_row:checked").length;
-
         if (selectedCount == 0) {
             $(".btn_delete").prop("disabled", true);
         } else {
             $(".btn_delete").prop("disabled", false);
         }
     }
-
-
 
     //handle edit button
     function handleEditButton() {
@@ -88,32 +85,10 @@ $(document).ready(function () {
     })
 
     //multiple select song and add to playlist
-    $("#add_playlist").on("click",function(){
+    $("#add_playlist").on("click",function(event){
+        event.preventDefault()
         $.ajax({
             url: addtoPlaylistURL,
-            type: 'POST',
-            headers: { "X-CSRFToken": csrf_token },
-            data: { "selected_ids": select_ids,
-                    "id_playlist": $("#id_playlist").val()},
-            success: function (response) {
-                window.location.reload()
-            },
-            error: function (error) {
-                // alert("places select any one playlist")
-                
-                console.log(error);
-
-            }
-        })
-    })
-
-    // multiple song remove to playlist
-    $("#remove_playlist_submit").on("click",function(event) {
-       console.log("select_ids",select_ids)
-       event.preventDefault()
-//       debugger
-       $.ajax({
-            url: mulSongRemovePlaylist,
             type: "POST",
             headers: { "X-CSRFToken": csrf_token },
             data: { "selected_ids": select_ids,
@@ -121,15 +96,45 @@ $(document).ready(function () {
             success: function (response) {
                 window.location.reload()
             },
+            error: function (error) {
+                if (!document.getElementById("add_playlist_field").value){
+                     document.getElementById("error-message").innerHTML = "please select any playlist."
+                     document.getElementById("error-message").style.display= "block"
+                     return
+                }else {
+                    document.getElementById("add_playlist_form").submit()
+                }
+                console.log(error);
+            }
+        })
+    })
+
+    // multiple song remove to playlist
+    $("#remove_playlist_submit").on("click",function(event) {
+       event.preventDefault()
+       $.ajax({
+            url: mulSongRemovePlaylist,
+            type: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+            data: { "selected_ids": select_ids,
+                    "id_playlist": $("#remove_playlist_lab").val()},
+            success: function (response) {
+                window.location.reload()
+            },
             error:function (error){
-                console.log(error)
+                if (!document.getElementById("remove_playlist_lab").value){
+                     document.getElementById("error-message-remove-playlist").innerHTML = "please select any playlist."
+                     document.getElementById("error-message-remove-playlist").style.display= "block"
+                     return
+                }else {
+                     document.getElementById("remove_playlist_song").submit()
+                }
             }
        })
     })
 
 //    multiple song select and create playlist and add song that playlist function
     $("#create_playlist").on("click",function(){
-        console.log("select_ids==",select_ids);
         $.ajax({
             url: mulSongCreatePlaylist,
             type: 'POST',
@@ -166,7 +171,6 @@ function addFav(song_id,obj) {
 $(".btn-playlist").prop("disabled", true);
     function addToPlayListDisable(){
         var selectedCount = $(".select_row:checked").length;
-        console.log("selectedCount",selectedCount)
             if (selectedCount == 0) {
                 $(".btn-playlist").prop("disabled", true);
             } else {
@@ -207,34 +211,3 @@ $(".btn-remove-playlist").prop("disabled", true);
    }
 
 
-// if user click on add to playlist button and user not select any playlist that time show error 
-
-// document.getElementById("add_playlist").addEventListener("click",function(){
-//     // var playlistname = $("#play_list").val()
-//     if (!document.getElementById("play_list").value){
-//         document.getElementById("error-message").innerHTML = "please select any playlist."
-//         document.getElementById("error-message").style.display= "block"
-//         return
-//     }else {
-//         document.getElementById("add_playlist_form").submit()
-//         // $("#add_playlist_form").submit()
-//     }
-// })
-
-
-
-
-
-
-
-
-// $(document).ready(function () {
-//     $(".btn-playlist").click(function() {
-//         var playlistname = $("#play_list").val()
-//         if(!playlistname){
-//             $("#playlist-error").text("please select any one playlist").removeClass('d-none')
-//             return
-//         }
-//         $("add_playlist_form").submit()
-//     })
-// })

@@ -97,6 +97,7 @@ class SongList(LoginRequiredMixin, ListView):
             context["song_id_list"] = song_id_list
             context["addplaylistform"] = AddToFavouriteForm
             context["createplaylistform"] = CreatePlayListForm
+
         return context
 
 
@@ -266,10 +267,12 @@ class RemovePlayListSongs(DeleteView):
     form_class = AddToFavouriteForm
     success_url = reverse_lazy("show_playlist")
 
+
+
     def post(self, request, *args, **kwargs):
         selected_ids =  request.POST.getlist("selected_ids[]")
         id_playlist = request.POST.get("id_playlist")
-
+        print("id_playlist",id_playlist)
         songs = Song.objects.filter(id__in=selected_ids)
         playlist = get_object_or_404(PlayList,id=id_playlist)
 

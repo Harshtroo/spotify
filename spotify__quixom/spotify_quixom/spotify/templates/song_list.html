@@ -43,56 +43,6 @@
       </div>
 </div>
 
-<!--This is click on remove to playlist that time open modal-->
-<div class="modal fade" id="remove_playlist" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-    <h5 class="modal-title" id="remove_playlist_heading" align="center">Songs remove to playlist</h5>
-    </div>
-          <form class="px-md-2" method="POST">
-            {% csrf_token %}
-
-            <div class="form-outline mb-4">
-              <div class="form-outline datepicker">
-                <label for="exampleDatepicker1" class="form-label" id="remove_playlist_lab">Select playlist </label>
-                {{addplaylistform.playlist}}
-
-                {% for error in addplaylistform.playlist.errors %}
-                <div class="alert alert-danger">
-                  <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-              </div>
-            </div>
-
-            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
-            <button type="button" id="remove_playlist_submit" class="btn btn-success btn-lg mb-1" >Submit</button>
-
-            {% for error in form.non_field_errors %}
-            <div class="alert alert-danger">
-              <strong>{{ error|escape }}</strong>
-            </div>
-            {% endfor %}
-          </form>
-        </div>
-      </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!--This is click on add to playlist that time open modal-->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 <div class="modal-dialog">
@@ -105,7 +55,7 @@
 
             <div class="form-outline mb-4">
               <div class="form-outline datepicker">
-                <label for="exampleDatepicker1" class="form-label" id="play_list">Select playlist </label>
+                <label for="exampleDatepicker1" class="form-label" id="add_playlist_field" >Select playlist </label>
                 {{addplaylistform.playlist}}
 
                 {% for error in addplaylistform.playlist.errors %}
@@ -114,7 +64,6 @@
                 </div>
                 {% endfor %}
               </div>
-              
             </div>
             <div id="error-message" class="alert alert-danger" style="display: none;"></div>
             <button type="button" class="btn btn-primary create_btn">Create playlist</button>
@@ -131,9 +80,49 @@
       </div>
 </div>
 
+<!--This is click on remove to playlist that time open modal-->
+<div class="modal fade" id="remove_playlist" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="remove_playlist_heading" align="center">Songs remove to playlist</h5>
+    </div>
+          <form class="px-md-2" method="POST" id="remove_playlist_song">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label" >Select playlist </label>
+
+                <select name="{{filter.type_of_resource.html_name}}" class="btn btn-filter form-control text-dark text-left my-select" id="remove_playlist_lab"  style="background-color: #dbdce0">
+                  {% for key,value in addplaylistform.fields.playlist.choices %}
+                      <option value="{{key}}">{{value}}</option>
+                  {% endfor %}
+                </select>
+                {% for error in addplaylistform.playlist.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div id="error-message-remove-playlist" class="alert alert-danger" style="display: none;"></div>
+
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="remove_playlist_submit" class="btn btn-success btn-lg mb-1" >Submit</button>
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+</div>
+
 <button type="button" class="btn btn-primary btn-playlist" >Add to Playlist</button>
 <button type="button" class="btn btn-primary btn-remove-playlist" >Remove to Playlist</button>
-
 <button type="button" class="btn_delete delete_master">Delete</button>
 
 <!--This is a song list html-->
