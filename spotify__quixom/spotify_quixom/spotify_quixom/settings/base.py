@@ -42,7 +42,7 @@ path.append(CONFIG_ROOT)
 
 ########## DEBUG CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = STAGING = env.bool("DJANGO_DEBUG", False)
+DEBUG = STAGING = env.bool("DJANGO_DEBUG", True)
 ########## END DEBUG CONFIGURATION
 
 ADMINS = (("""Your Name""", "Your Email"),)
