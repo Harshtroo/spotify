@@ -38,6 +38,11 @@ class Login(LoginView):
     template_name = "login.html"
     success_url = reverse_lazy("home")
 
+    # def form_invalid(self, form):
+
+    #     messages.error(self.request,"invalid username and password.")
+    #     return  self.render_to_response(self.get_context_data(form=form))
+
 
 class Logout(LogoutView):
     """logout class"""
@@ -206,7 +211,7 @@ class UpdatePlayList(UpdateView):
     success_url = reverse_lazy("show_playlist")
 
     def post(self, request, *args, **kwargs):
-        form = self.form_class(self.request.POST,instance=self.get_object())
+        form = self.form_class(self.request.POST, instance=self.get_object())
         if form.is_valid():
             form.save()
             return redirect(self.success_url)
@@ -222,7 +227,7 @@ class DeletePlayList(DeleteView):
         return HttpResponseRedirect(self.success_url)
 
 
-class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
+class AddToPlaylist(LoginRequiredMixin, CreateView, ListView):
     form_class = AddToFavouriteForm
     success_url = reverse_lazy("show_playlist")
 
@@ -231,8 +236,8 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
         id_playlist = request.POST.get("id_playlist")
         # if id_playlist == '':
         #     messages.warning(request,"please select any one playlist")
-        playlist = get_object_or_404(PlayList,id=id_playlist)
-        print("playlist",playlist)
+        playlist = get_object_or_404(PlayList, id=id_playlist)
+        print("playlist", playlist)
         songs = Song.objects.filter(id__in=selected_ids)
         if len(songs) == 0:
             messages.warning(request, "Please select at least one song.")
@@ -245,7 +250,7 @@ class AddToPlaylist(LoginRequiredMixin,CreateView,ListView):
         return redirect(self.success_url)
 
 
-class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
+class MulSongCreatePlaylist(LoginRequiredMixin, CreateView):
     model = PlayList
     form_class = CreatePlayListForm
     success_url = reverse_lazy("show_playlist")
@@ -258,7 +263,7 @@ class MulSongCreatePlaylist(LoginRequiredMixin,CreateView):
         if PlayList.objects.filter(name__icontains=playlist_name).exists():
             messages.warning(request, "This playlist name already exists.")
             return redirect(self.success_url)
-        create_playlist = PlayList.objects.create(name=playlist_name,user=self.request.user)
+        create_playlist = PlayList.objects.create(name=playlist_name, user=self.request.user)
         create_playlist.songs.add(*selected_ids)
         return redirect(self.success_url)
 
@@ -267,14 +272,12 @@ class RemovePlayListSongs(DeleteView):
     form_class = AddToFavouriteForm
     success_url = reverse_lazy("show_playlist")
 
-
-
     def post(self, request, *args, **kwargs):
-        selected_ids =  request.POST.getlist("selected_ids[]")
+        selected_ids = request.POST.getlist("selected_ids[]")
         id_playlist = request.POST.get("id_playlist")
-        print("id_playlist",id_playlist)
+        print("id_playlist", id_playlist)
         songs = Song.objects.filter(id__in=selected_ids)
-        playlist = get_object_or_404(PlayList,id=id_playlist)
+        playlist = get_object_or_404(PlayList, id=id_playlist)
 
         # for song in songs:
         #     if song in PlayList.objects.all():
