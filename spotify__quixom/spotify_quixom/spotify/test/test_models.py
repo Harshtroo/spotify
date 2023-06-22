@@ -34,14 +34,6 @@ class UserTstCases(TestCase):
             user.full_clean()
 
 
-    # TODO: For Required fields
-    # TODO: Try to create test cases duplicate username
-    # TODO: Normal create Success
-    # TODO: Mobile number validation
-    # TODO: Choose role choice which is not available ("Invalid")
-    # TODO: ek user create usko is_active false kr diya baad me vapas us naam se create karne ka ??
-
-
 class SingerTestCases(TestCase):
 
     def test_create_singer(self):
@@ -54,20 +46,20 @@ class CreateSongTestCases(TestCase):
     def test_create_new_song(self):
         singer = Singer.objects.create(name="Arijit singh")
         song = Song.objects.create(name="tum hi ho",singer=singer,category="Hindi")
-        self.assertTrue(song.name, "tum hi ho")
-        self.assertTrue(song.singer.name, "Arijit singh")
-        self.assertTrue(song.category, "Hindi")
+        self.assertEqual(song.name, "tum hi ho")
+        self.assertEqual(song.singer.name, "Arijit singh")
+        self.assertEqual(song.category, "Hindi")
 
-    def test_all_field_required(self):
-        singer = Singer.objects.create(name="Arijit singh")
+    def test_all_fields_required(self):
+        singer = Singer.objects.create(name="Arijit Singh")
         with self.assertRaises(ValidationError):
-            song = Song.objects.create(name="tum avo na",singer=singer)
+            song = Song.objects.create(name="Tum Avo Na", singer=singer)
             song.full_clean()
         with self.assertRaises(ValidationError):
-            song = Song.objects.create(singer=singer,category="Hindi")
+            song = Song.objects.create(singer=singer, category="Hindi")
             song.full_clean()
         # with self.assertRaises(ValidationError):
-        #     song = Song.objects.create(name="tum avo na",category="Hindi")
+        #     song = Song.objects.create(name="Tum Avo Na", category="Hindi", singer=singer)
         #     song.full_clean()
 
 
@@ -80,24 +72,17 @@ class FavouriteTestCases(TestCase):
 
     def test_create_favourite(self):
         favourite = Favourite(user=self.user)
-        try:
-            favourite.full_clean()
-            favourite.save()
-            self.assertTrue(favourite.id)
-        except Exception:
-            pass
+        favourite.save()
+        self.assertIsNotNone(favourite.id)
 
     def test_user_not_pass(self):
-        favourite = Favourite.objects.create(songs=[self.song.id])
-        try:
-
-            self.assertTrue(favourite.id)
-        except Exception as error:
-            self.assertEqual(error,[""])
-            pass
+        with self.assertRaises(ValidationError):
+            favourite = Favourite()
+            favourite.full_clean()
 
 
 class TestPlayList(TestCase):
+
     def test_create_playlist(self):
         """
         To create playlist we need user, songs
@@ -110,9 +95,6 @@ class TestPlayList(TestCase):
         playlist.songs.add(add_to_song.id)
         self.assertEqual(PlayList.objects.all().count(), 1)
 
-    #     playlist.full_clean()
-    #     playlist.save()
-    #     self.assertTrue(playlist.id)
 
 class AddToPlayListTestCases(TestCase):
 
@@ -127,7 +109,3 @@ class AddToPlayListTestCases(TestCase):
         song =Song.objects.create(name="tum hi ho",singer=self.singer,category="Hindi")
         add_to_playlist.songs.add(song.id)
         self.assertEqual(add_to_playlist.songs.first().id,song.id)
-
-
-
-

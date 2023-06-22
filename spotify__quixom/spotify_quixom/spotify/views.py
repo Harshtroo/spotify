@@ -37,15 +37,9 @@ class Login(LoginView):
     template_name = "login.html"
     success_url = reverse_lazy("home")
 
-    # def form_invalid(self, form):
-
-    #     messages.error(self.request,"invalid username and password.")
-    #     return  self.render_to_response(self.get_context_data(form=form))
-
 
 class Logout(LogoutView):
     """logout class"""
-
     pass
 
 
