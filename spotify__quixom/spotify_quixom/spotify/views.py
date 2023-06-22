@@ -27,7 +27,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class Home(TemplateView):
     """Home page view"""
-
     template_name = "home.html"
 
 

@@ -44,7 +44,7 @@ class SignUpForm(UserCreationForm):
 class SongForm(forms.ModelForm):
     class Meta:
         model = Song
-        fields = ["name", "singer_name", "category"]
+        fields = ["name", "singer", "category"]
 
     def __init__(self, *args, **kwargs):
         super(SongForm, self).__init__(*args, **kwargs)
@@ -62,7 +62,7 @@ class SongForm(forms.ModelForm):
 class SongEditForm(forms.ModelForm):
     class Meta:
         model = Song
-        fields = ["name", "singer_name", "category"]
+        fields = ["name", "singer", "category"]
 
 
 class CreatePlayListForm(forms.ModelForm):

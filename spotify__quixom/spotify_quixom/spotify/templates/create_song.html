@@ -39,8 +39,8 @@
                   <div class="form-outline datepicker">
 
                     <label for="exampleDatepicker1" class="form-label">Singer name</label>
-                    {{form.singer_name}}
-                    {% for error in form.singer_name.errors %}
+                    {{form.singer}}
+                    {% for error in form.singer.errors %}
                     <div class="alert alert-danger">
                       <strong>{{ error|escape }}</strong>
                     </div>

@@ -144,7 +144,7 @@
       <th scope="row">{{forloop.counter}}</th>
       <th><input type="checkbox" class="select_row" name="checkbox" value="{{song.id}}"></th>
       <td>{{song.name}}</td>
-      <td>{{song.singer_name}}</td>
+      <td>{{song.singer}}</td>
       <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' song.id %}" id="btn_edit_{{song.id}}">Edit</button>
       </td>
 

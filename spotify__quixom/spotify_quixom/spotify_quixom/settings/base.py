@@ -42,7 +42,7 @@ path.append(CONFIG_ROOT)
 
 ########## DEBUG CONFIGURATION
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = STAGING = env.bool("DJANGO_DEBUG", True)
+DEBUG = STAGING = env.bool("DJANGO_DEBUG", False)
 ########## END DEBUG CONFIGURATION
 
 ADMINS = (("""Your Name""", "Your Email"),)
@@ -53,7 +53,7 @@ ADMIN_URL = env.str("DJANGO_ADMIN_URL", "admin")
 
 DATABASES = {
     "default": env.db(
-        "DATABASE_URL", default="mysql://root:root@localhost:3306/spotify_quixom"
+        "DATABASE_URL", default="mysql://root:root@localhost:3306/spotify__quixom"
     )
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True

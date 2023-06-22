@@ -32,7 +32,7 @@ class Song(models.Model):
     )
 
     name = models.CharField(max_length=100)
-    singer_name = models.ForeignKey(Singer, on_delete=models.CASCADE)
+    singer = models.ForeignKey(Singer, on_delete=models.CASCADE)
     category = models.CharField(max_length=50, choices=ROLES, null=True)
     is_deleted = models.BooleanField(default=False)
 
@@ -53,7 +53,7 @@ class Favourite(models.Model):
 class PlayList(models.Model):
     name = models.CharField(max_length=100, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    songs = models.ManyToManyField(Song)
+    songs = models.ManyToManyField(Song,related_name="song_rel")
 
     def __str__(self):
         return self.name

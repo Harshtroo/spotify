@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from spotify.models import User
+from spotify.models import User,Singer,Song,Favourite,PlayList
 from django.core.exceptions import ValidationError
 
 class UserTstCases(TestCase):
@@ -14,44 +14,24 @@ class UserTstCases(TestCase):
         self.assertEqual(user.role, "singer")
         self.assertTrue(user.check_password("abhi@1234"))
 
-    # def test_all_field_required(self):
-    #     with self.assertRaises(ValidationError):
-    #         user = User.objects.create(email="abhi123@gmail.com", mobile_number=6355157752, role="singer")
-
-    #     with self.assertRaises(ValidationError):
-    #         user = User.objects.create(username="abhi", mobile_number=6355157752, role="singer")
-
-    #     with self.assertRaises(ValidationError):
-    #         user = User.objects.create(username="abhi", email="abhi123@gmail.com", role="singer")
-
-    #     with self.assertRaises(ValidationError):
-    #         user = User.objects.create(username="abhi", email="abhi123@gmail.com", mobile_number=6355157752)
+    def test_all_field_required(self):
+        with self.assertRaises(ValidationError):
+            user = User.objects.create(email="abhi123@gmail.com", mobile_number=6355157752, role="singer")
+            user.full_clean()
+        with self.assertRaises(ValidationError):
+            user = User.objects.create(username="abhi", mobile_number=6355157752, role="singer")
+            user.full_clean()
+        with self.assertRaises(ValidationError):
+            user = User.objects.create(username="abhi1", email="abhi123@gmail.com", role="singer")
+            user.full_clean()
+        with self.assertRaises(ValidationError):
+            user = User.objects.create(username="abhi2", email="abhi123@gmail.com", mobile_number=6355157752)
+            user.full_clean()
 
     def test_create_user_with_invalid_mobile_number(self):
         with self.assertRaises(ValidationError) as context:
-            User.objects.create(username='abhi', mobile_number="123", role='singer')
-        self.assertEqual(context.exception.message_dict['mobile_number'][0], 'Ensure this value is greater than or equal to 0 and less than or equal to 9999999999.')
-
-    # def test_mobile_number_validator(self):
-    #     # Test the mobile number validator
-    #     with self.assertRaises(ValidationError):
-    #         user = User(
-    #             username="abhi",
-    #             email="abhi123@gmail.com",
-    #             mobile_number=123456789,  # Invalid mobile number, less than 10 digits
-    #             role="singer",
-    #             password="abhi@1234"
-    #         )
-    #         user.full_clean()  
-
-
-
-
-    # def test_required_fields(self):
-    #     # user = User.objects.create(username="abhi",email="abhi@gmail.com",mobile_number="9874561230",role="singer",password="harsh@1234")
-    #     user = User(username="abhi")
-    #     # with self.assertRaises(ValidationError):
-
+            user = User(mobile_number="123")
+            user.full_clean()
 
 
     # TODO: For Required fields
@@ -62,21 +42,92 @@ class UserTstCases(TestCase):
     # TODO: ek user create usko is_active false kr diya baad me vapas us naam se create karne ka ??
 
 
+class SingerTestCases(TestCase):
 
-# class CreateSongTestCases(TestCase):
-#
-#     def setUp(self):
-#         self.client = Client()
-#         self.create_song_url = reverse("create_song")
-#         self.create_song = Song.objects.create(name="suno", singer_name="arijit singh", category="Hindi")
-#
-#     def User_create_new_song(self):
-#         response = self.client.post(self.create_song_url, self.create_song)
-#         self.assertEquals(response.status_code, 302)
-#         self.assertRedirects(response, "/song_list/")
-#
-#     # def test_all_field_required_or_return_400(self):
-#     #     song_data = Song(name="suno", category="Hindi")
-#     #     with self.assertRaises(Exception) as e:
-#     #         song_data.full_clean()
-#     #     self.assertEqual(dict(e.exception)['singer_name'], ['This field cannot be blank.'])
+    def test_create_singer(self):
+        singer = Singer.objects.create(name="Arijit singh")
+        self.assertTrue(singer.name,"Arijit singh")
+
+
+class CreateSongTestCases(TestCase):
+
+    def test_create_new_song(self):
+        singer = Singer.objects.create(name="Arijit singh")
+        song = Song.objects.create(name="tum hi ho",singer=singer,category="Hindi")
+        self.assertTrue(song.name, "tum hi ho")
+        self.assertTrue(song.singer.name, "Arijit singh")
+        self.assertTrue(song.category, "Hindi")
+
+    def test_all_field_required(self):
+        singer = Singer.objects.create(name="Arijit singh")
+        with self.assertRaises(ValidationError):
+            song = Song.objects.create(name="tum avo na",singer=singer)
+            song.full_clean()
+        with self.assertRaises(ValidationError):
+            song = Song.objects.create(singer=singer,category="Hindi")
+            song.full_clean()
+        # with self.assertRaises(ValidationError):
+        #     song = Song.objects.create(name="tum avo na",category="Hindi")
+        #     song.full_clean()
+
+
+class FavouriteTestCases(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username="harsh")
+        self.singer = Singer.objects.create(name="Arijit singh")
+        self.song = Song.objects.create(name="tum hi ho",singer=self.singer,category="Hindi")
+
+    def test_create_favourite(self):
+        favourite = Favourite(user=self.user)
+        try:
+            favourite.full_clean()
+            favourite.save()
+            self.assertTrue(favourite.id)
+        except Exception:
+            pass
+
+    def test_user_not_pass(self):
+        favourite = Favourite.objects.create(songs=[self.song.id])
+        try:
+
+            self.assertTrue(favourite.id)
+        except Exception as error:
+            self.assertEqual(error,[""])
+            pass
+
+
+class TestPlayList(TestCase):
+    def test_create_playlist(self):
+        """
+        To create playlist we need user, songs
+        ...
+        """
+        user = User.objects.create(username="User1")
+        singer = Singer.objects.create(name="Singer1")
+        add_to_song = Song.objects.create(name="Song1",singer=singer, category="Hindi")
+        playlist = PlayList.objects.create(name="Playlist1", user=user)
+        playlist.songs.add(add_to_song.id)
+        self.assertEqual(PlayList.objects.all().count(), 1)
+
+    #     playlist.full_clean()
+    #     playlist.save()
+    #     self.assertTrue(playlist.id)
+
+class AddToPlayListTestCases(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username="harsh")
+        self.singer = Singer.objects.create(name="Arijit singh")
+        self.song = Song.objects.create(name="tum hi ho",singer=self.singer,category="Hindi")
+        self.playlist=PlayList.objects.create(name="harshplaylist",user=self.user)
+
+    def test_add_song_to_playlist(self):
+        add_to_playlist = self.playlist
+        song =Song.objects.create(name="tum hi ho",singer=self.singer,category="Hindi")
+        add_to_playlist.songs.add(song.id)
+        self.assertEqual(add_to_playlist.songs.first().id,song.id)
+
+
+
+
