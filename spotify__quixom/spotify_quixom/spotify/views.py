@@ -95,7 +95,6 @@ class SongList(LoginRequiredMixin, ListView):
             context["song_id_list"] = song_id_list
             context["addplaylistform"] = AddToFavouriteForm
             context["createplaylistform"] = CreatePlayListForm
-
         return context
 
 

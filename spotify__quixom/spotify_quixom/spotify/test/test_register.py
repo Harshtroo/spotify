@@ -16,7 +16,6 @@ class RegisterTestCases(TestCase):
              "mobile_number":"6355157752",
              "role":"singer",
              "password":"abhi@1234"
-
         }
         response = self.client.post(self.url,data)
         self.assertEqual(response.status_code,200)
