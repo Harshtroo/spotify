@@ -66,7 +66,7 @@ class SingUp(CreateView):
 class SongCreate(SuccessMessageMixin, CreateView):
     template_name = "create_song.html"
     form_class = SongForm
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("song_list")
     success_message = "successfully create song"
 
     def post(self, request, *args, **kwargs):
@@ -201,6 +201,12 @@ class UpdatePlayList(UpdateView):
     form_class = UpdatePlayListForm
     template_name = "play_list.html"
     success_url = reverse_lazy("show_playlist")
+
+    def get(self, request, *args, **kwargs):
+        playlist = self.get_object()
+        form = self.form_class(instance=playlist)
+        return render(request, self.template_name, {"form": form})
+
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(self.request.POST, instance=self.get_object())

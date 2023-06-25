@@ -104,6 +104,4 @@ class AddToFavouriteForm(forms.ModelForm):
             self.fields[field].required = True
         self.fields["playlist"].choices = [("", "Select")] + [
             (request.id, request) for request in PlayList.objects.all()]
-        # self.fields['playlist'].choices = PlayList.objects.all()
-        # self.fields['playlist'].choices = [("", "Select")] + list(AddToPlayList.UserType.choices)
-
+        
