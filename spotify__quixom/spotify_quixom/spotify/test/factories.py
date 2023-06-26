@@ -17,14 +17,14 @@ class UserFactory(DjangoModelFactory):
 
 
 class SingerFactory(DjangoModelFactory):
-    name = factory.Faker("singername")
+    name = "singer1"
 
     class Meta:
         model = Singer
 
 
 class SongFactory(DjangoModelFactory):
-    name = factory.Faker("song")
+    name = factory.Sequence(lambda n: f"song{n}")
     singer = factory.SubFactory(SingerFactory)
     category = factory.Faker("category")
 
