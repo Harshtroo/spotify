@@ -14,3 +14,4 @@ pre-commit==2.20.0
 factory-boy==3.2.1
 djangorestframework==3.14.0
 black==22.10.0
+Faker==2.8.2

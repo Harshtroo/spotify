@@ -31,7 +31,7 @@ class Song(models.Model):
     )
 
     name = models.CharField(max_length=100)
-    singer = models.ForeignKey(Singer, on_delete=models.CASCADE)
+    singer = models.ForeignKey(Singer, on_delete=models.CASCADE, null=True)
     category = models.CharField(max_length=50, choices=ROLES, null=True)
     is_deleted = models.BooleanField(default=False)
 
