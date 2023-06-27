@@ -9,8 +9,8 @@ from spotify.models import  User, Singer, Song, Favourite, PlayList
 class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Faker("user_name")
     email = factory.Faker("email")
-    role = factory.Faker("singer")
-    mobile_number = factory.Faker("9874561230")
+    role = factory.Faker("name")
+    mobile_number = factory.Faker("random_number", digits=10)
     password = factory.Faker("password")
 
     class Meta:
@@ -18,13 +18,13 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 
 class SingerFactory(factory.django.DjangoModelFactory):
-    name = factory.Faker("singer")
+    name = factory.Faker("name")
 
     class Meta:
         model = Singer
 
 
-class SongFactory(DjangoModelFactory):
+class SongFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: f"song{n}")
     singer = factory.SubFactory(SingerFactory)
     category = factory.Faker("name")
@@ -33,15 +33,24 @@ class SongFactory(DjangoModelFactory):
         model = Song
 
 
-class FavouriteFactory(DjangoModelFactory):
+class FavouriteFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
-    songs = factory.Faker("word")
+    # songs = factory.Faker("word")
 
     class Meta:
         model = Favourite
 
+    @factory.post_generation
+    def songs(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
 
-class PlayListFactory(DjangoModelFactory):
+        if extracted:
+            # A list of songs was passed in, use them
+            self.songs.set(extracted)
+
+class PlayListFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("name")
     user = factory.SubFactory(UserFactory)
     # songs = factory.RelatedFactory(

@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from spotify.models import User, Singer, Song, Favourite, PlayList
 from django.urls import reverse
 from .factories import SongFactory, UserFactory, SingerFactory,FavouriteFactory,PlayListFactory,AddToPlayListFactory
-
+from django.core.exceptions import ValidationError
 
 class SongCreateTestCases(TestCase):
 
@@ -14,7 +14,7 @@ class SongCreateTestCases(TestCase):
 
         song_data = {
             "name": song.name,
-            "singer": song.singer,
+            "singer": song.singer.name,
             "category": song.category,
         }
         response = self.client.post(self.create_song_url, song_data)
@@ -47,10 +47,10 @@ class SongCreateTestCases(TestCase):
 
 
 # class SongListTestCases(TestCase):
-#
+
 #     def setUp(self):
 #         self.song_list_url = reverse("song_list")
-#
+
 #     def test_song_list(self):
 #         song= SongFactory()
 #         song_data = {
@@ -59,7 +59,7 @@ class SongCreateTestCases(TestCase):
 #             "category": song.category,
 #         }
 #         response = self.client.get(self.song_list_url,song_data)
-#         self.assertEquals(302,response.status_code)
+#         self.assertEquals(200,response.status_code)
 #         print("responce==========",response)
 #         self.assertContains(response, song.name)
 #         self.assertContains(response, song.name)
@@ -86,11 +86,11 @@ class SongUpdateTestCases(TestCase):
 
 
 # class SongDeleteTestCases(TestCase):
-#
+
 #     def setUp(self):
 #         self.song = SongFactory()
-#
-#
+
+
 #     def test_song_delete(self):
 #         # song = SongFactory(name="song1", singer=self.song.singer, category="Hindi")
 #         response = self.client.delete(reverse("song_delete", kwargs={"pk": self.song.id}))
@@ -99,11 +99,11 @@ class SongUpdateTestCases(TestCase):
 
 
 # class AddToFavouriteTestCases(TestCase):
-#
+
 #     def setUp(self):
 #         self.favourite = FavouriteFactory()
 #         self.add_to_favourite_url = reverse("song_fav")
-#
+
 #     def test_add_to_favourite_song(self):
 #         # add_fav_data = {
 #         #     user = self.favourite.user,
@@ -111,24 +111,25 @@ class SongUpdateTestCases(TestCase):
 #         # }
 #         # user = UserFactory()
 #         response = self.client.force_authenticate(user=self.favourite.user)
-#         response = self.client.post(self.add_to_favourite_url, {"songs": self.favourite.songs})
+#         response = self.client.post(self.add_to_favourite_url, {"songs": [self.favourite.songs.id]})
 #         self.assertEqual(response.status_code, 200)
+#         self.favourite.songs.set([self.favourite.songs])
 #         self.assertTrue(Favourite.objects.filter(user=self.favourite.user, songs=self.favourite.songs).exists())
 
 
-# class FavouriteListTestCases(TestCase):
-#
-#     def setUp(self):
-#         self.favourite = FavouriteFactory()
-#         # self.user = UserFactory(username="testuser", password="1234")
-#         # self.favourite = FavouriteFactory(user=self.user)
-#         self.favourite_list_url = reverse("user_fav_song")
-#
-#     def test_favourite_list_view(self):
-#         response = self.client.get(self.favourite_list_url)
-#         self.assertEqual(response.status_code, 200)
-#         self.assertIn(self.favourite, response.context["fav"])
-#         self.assertEqual(response.context["user"], self.favourite.user)
+class FavouriteListTestCases(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.favourite = FavouriteFactory(user=self.user)
+        self.favourite_list_url = reverse("user_fav_song")
+
+    def test_favourite_list_view(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.favourite_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.favourite, response.context["fav"])
+        self.assertEqual(response.context["user"], self.user)
 
 
 class CreatePlaylistTestCases(TestCase):
@@ -137,46 +138,46 @@ class CreatePlaylistTestCases(TestCase):
         self.create_playlist_url = reverse("play_list")
 
     def test_create_playlist(self):
-        song1 = SongFactory()
-        song2 = SongFactory()
-        playlist = PlayListFactory()
-        print("playlist=============",playlist)
+        user = UserFactory()
+        song = SongFactory()
+        playlist = PlayListFactory(user=user, songs=[song])
         playlist_data = {
             "name":  playlist.name,
-            "user":  playlist.user,
+            "user":  user.id,
 
         }
 
         response = self.client.post(self.create_playlist_url, playlist_data)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertTrue(PlayList.objects.filter(name=playlist.name).exists())
 
-    # def test_playlist_already_exists(self):
-    #     create_playlist = PlayListFactory()
-    #     # create_playlist.songs.add(self.song)
-    #     playlist_data = {
-    #         "name": create_playlist.name,
-    #         "songs": [create_playlist.songs.id],
-    #     }
-    #     response = self.client.post(self.create_playlist_url, playlist_data)
-    #     self.assertEqual(response.status_code, 200)
+    def test_playlist_already_exists(self):
+        create_playlist = PlayListFactory()
+        song_ids = create_playlist.songs.values_list('id', flat=True)
+        # create_playlist.songs.add(self.song)
+        playlist_data = {
+            "name": create_playlist.name,
+            "songs": list(song_ids),
+        }
+        response = self.client.post(self.create_playlist_url, playlist_data)
+        self.assertEqual(response.status_code, 200)
 
-#
-# class ShowPlayListTestCases(TestCase):
 
-#     def setUp(self):
-#         self.user = UserFactory(username="testuser", password="testpassword")
-#         self.playlist = PlayListFactory(user=self.user)
-#         self.show_playlist_url = reverse("show_playlist")
+class ShowPlayListTestCases(TestCase):
 
-#     def test_show_playlist_view(self):
-#         self.client.force_login(self.user)
-#         response = self.client.get(self.show_playlist_url)
-#         self.assertEqual(response.status_code, 200)
-#         # self.assertTemplateUsed(response, "show_play_list.html")
-#         self.assertEqual(response.context["user"], self.user)
-#         self.assertIn(self.playlist, response.context["playlist"])
-#
+    def setUp(self):
+        self.user = UserFactory(username="testuser", password="testpassword")
+        self.playlist = PlayListFactory(user=self.user)
+        self.show_playlist_url = reverse("show_playlist")
+
+    def test_show_playlist_view(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.show_playlist_url)
+        self.assertEqual(response.status_code, 200)
+        # self.assertTemplateUsed(response, "show_play_list.html")
+        self.assertEqual(response.context["user"], self.user)
+        self.assertIn(self.playlist, response.context["playlist"])
+
 
 # class UpdatePlayListTestCases(TestCase):
 
@@ -191,93 +192,96 @@ class CreatePlaylistTestCases(TestCase):
 #     def test_update_playlist_view(self):
 #         self.client.force_login(self.user)
 #         response = self.client.post(self.update_playlist_url, self.form_data)
-#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(302,response.status_code )
 #         self.assertRedirects(response, reverse("show_playlist"), target_status_code=302)
 #         self.playlist.refresh_from_db()
 #         self.assertEqual(self.playlist.name, "updated_playlist")
 
-# class DeletePlayListTestCases(TestCase):
+class DeletePlayListTestCases(TestCase):
 
-#     def setUp(self):
-#         self.user = UserFactory(username="testuser", password="testpassword")
-#         self.playlist = PlayListFactory(user=self.user, name="playlist1")
-#         self.delete_playlist_url = reverse("delete_playlist", kwargs={"pk": self.playlist.pk})
+    def setUp(self):
+        self.user = UserFactory(username="testuser", password="testpassword")
+        self.playlist = PlayListFactory(user=self.user, name="playlist1")
+        self.delete_playlist_url = reverse("delete_playlist", kwargs={"pk": self.playlist.pk})
 
-#     def test_delete_playlist_view(self):
-#         self.client.force_login(self.user)
-#         response = self.client.post(self.delete_playlist_url)
-#         self.assertEqual(response.status_code, 302)
-#         self.assertRedirects(response, reverse("show_playlist"))
-#         self.assertFalse(PlayList.objects.filter(id=self.playlist.pk).exists())
+    def test_delete_playlist_view(self):
+        self.client.force_login(self.user)
+        response = self.client.post(self.delete_playlist_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("show_playlist"))
+        self.assertFalse(PlayList.objects.filter(id=self.playlist.pk).exists())
+
+
+class AddToPlaylistTestCases(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory(username="testuser", password="testpassword")
+        self.playlist = PlayListFactory(user=self.user, name="playlist1")
+        self.singer = SingerFactory(name="singer1")
+        self.song1 = SongFactory(name="song1", singer=self.singer)
+        self.song2 = SongFactory(name="song2", singer=self.singer)
+        self.add_to_playlist_url = reverse("add_song_playlist")
+
+    def test_add_to_playlist_view(self):
+        form_data = {
+            "selected_ids[]": [self.song1.id, self.song2.id],
+            "id_playlist": self.playlist.id,
+        }
+        self.client.force_login(self.user) 
+        response = self.client.post(self.add_to_playlist_url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("show_playlist"))
+        self.playlist.refresh_from_db()
+        self.assertTrue(self.song1 in self.playlist.songs.all())
+        self.assertTrue(self.song2 in self.playlist.songs.all())
 #
+    def test_add_to_playlist_view_no_song_selected(self):
+        form_data = {
+            "selected_ids[]": [],
+            "id_playlist": self.playlist.id,
+        }
+        self.client.force_login(self.user) 
+        response = self.client.post(self.add_to_playlist_url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("show_playlist"))
+        self.playlist.refresh_from_db()
+        self.assertFalse(self.playlist.songs.exists())
 
-# class AddToPlaylistTestCases(TestCase):
-
-#     def setUp(self):
-#         self.user = UserFactory(username="testuser", password="testpassword")
-#         self.playlist = PlayListFactory(user=self.user, name="playlist1")
-#         self.singer = SingerFactory(name="singer1")
-#         self.song1 = SongFactory(name="song1", singer=self.singer)
-#         self.song2 = SongFactory(name="song2", singer=self.singer)
-#         self.add_to_playlist_url = reverse("add_song_playlist")
-
-# #     def test_add_to_playlist_view(self):
-#         form_data = {
-#             "selected_ids[]": [self.song1.id, self.song2.id],
-#             "id_playlist": self.playlist.id,
-#         }
-#         response = self.client.post(self.add_to_playlist_url, form_data)
-#         self.assertEqual(response.status_code, 302)
-#         self.assertRedirects(response, reverse("show_playlist"))
-#         self.playlist.refresh_from_db()
-#         self.assertTrue(self.song1 in self.playlist.songs.all())
-#         self.assertTrue(self.song2 in self.playlist.songs.all())
-# #
-#     def test_add_to_playlist_view_no_song_selected(self):
-#         form_data = {
-#             "selected_ids[]": [],
-#             "id_playlist": self.playlist.id,
-#         }
-#         response = self.client.post(self.add_to_playlist_url, form_data)
-#         self.assertEqual(response.status_code, 302)
-#         self.assertRedirects(response, reverse("show_playlist"))
-#         self.playlist.refresh_from_db()
-#         self.assertFalse(self.playlist.songs.exists())
-
-#     def test_add_to_playlist_view_song_already_in_playlist(self):
-#         self.playlist.songs.add(self.song1)
-#         form_data = {
-#             "selected_ids[]": [self.song1.id],
-#             "id_playlist": self.playlist.id,
-#         }
-#         response = self.client.post(self.add_to_playlist_url, form_data)
-#         self.assertEqual(response.status_code, 302)
-#         self.assertRedirects(response, reverse("show_playlist"))
-#         self.playlist.refresh_from_db()
-#         self.assertEqual(self.playlist.songs.count(), 1)
+    def test_add_to_playlist_view_song_already_in_playlist(self):
+        self.playlist.songs.add(self.song1)
+        form_data = {
+            "selected_ids[]": [self.song1.id],
+            "id_playlist": self.playlist.id,
+        }
+        self.client.force_login(self.user) 
+        response = self.client.post(self.add_to_playlist_url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("show_playlist"))
+        self.playlist.refresh_from_db()
+        self.assertEqual(self.playlist.songs.count(), 1)
 
 
 
-# class MulSongCreatePlaylistTestCases(TestCase):
-#
-#     def setUp(self):
-#         # self.user = UserFactory()
-#         # self.singer = SingerFactory()
-#         # self.song1 = SongFactory()
-#         # self.song2 = SongFactory()
-#         self.playlist = PlayListFactory()
-#         self.create_playlist_url = reverse("mul_song_create_playlist")
-#         self.form_data = {
-#             "selected_ids[]": [self.playlist.songs.id, self.playlist.songs.id],
-#             "form": "My Playlist",
-#         }
-#
-#     def test_create_playlist_view(self):
-#         self.client.force_login(self.playlist.user)
-#         response = self.client.post(self.create_playlist_url, self.form_data)
-#         self.assertEqual(response.status_code, 302)
-#         self.assertRedirects(response, reverse("show_playlist"))
-#         self.assertTrue(PlayList.objects.filter(name="My Playlist", user=self.playlist.user).exists())
+class MulSongCreatePlaylistTestCases(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.singer = SingerFactory()
+        self.song1 = SongFactory()
+        self.song2 = SongFactory()
+        self.playlist = PlayListFactory()
+        self.create_playlist_url = reverse("mul_song_create_playlist")
+        self.form_data = {
+            "selected_ids[]": [self.song1.id, self.song2.id],
+            "form": "My Playlist",
+        }
+
+    def test_create_playlist_view(self):
+        self.client.force_login(self.playlist.user)
+        response = self.client.post(self.create_playlist_url, self.form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("show_playlist"))
+        self.assertTrue(PlayList.objects.filter(name="My Playlist", user=self.playlist.user).exists())
 
     # def test_create_playlist_view_existing_playlist_name(self):
     #     self.client.force_login(self.user)
@@ -285,61 +289,61 @@ class CreatePlaylistTestCases(TestCase):
     #     with self.assertRaises(ValidationError):
     #         response = self.client.post(self.create_playlist_url, self.form_data)
     #     self.assertFalse(PlayList.objects.filter(name="My Playlist", user=self.user).exists())
+
+
+class RemovePlayListSongsTestCase(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create(username='testuser')
+        self.playlist = PlayList.objects.create(name='My Playlist', user=self.user)
+        self.singer = Singer.objects.create(name="singer1")
+        self.song1 = Song.objects.create(name='Song 1',singer=self.singer)
+        self.song2 = Song.objects.create(name='Song 2',singer=self.singer)
+        self.playlist.songs.add(self.song1, self.song2)
+        self.url = reverse('mul_remove_playlist')
+
+    def test_remove_playlist_songs(self):
+        self.client.force_login(self.user)
+
+        data = {
+            'selected_ids[]': [self.song1.id, self.song2.id],
+            'id_playlist': self.playlist.id
+        }
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('show_playlist'))
+        self.playlist.refresh_from_db()
+        self.assertNotIn(self.song1, self.playlist.songs.all())
+        self.assertNotIn(self.song2, self.playlist.songs.all())
 #
-#
-# class RemovePlayListSongsTestCase(TestCase):
-#
-#     def setUp(self):
-#         self.user = User.objects.create(username='testuser')
-#         self.playlist = PlayList.objects.create(name='My Playlist', user=self.user)
-#         self.singer = Singer.objects.create(name="singer1")
-#         self.song1 = Song.objects.create(name='Song 1',singer=self.singer)
-#         self.song2 = Song.objects.create(name='Song 2',singer=self.singer)
-#         self.playlist.songs.add(self.song1, self.song2)
-#         self.url = reverse('mul_remove_playlist')
-#
-#     def test_remove_playlist_songs(self):
-#         self.client.force_login(self.user)
-#
-#         data = {
-#             'selected_ids[]': [self.song1.id, self.song2.id],
-#             'id_playlist': self.playlist.id
-#         }
-#         response = self.client.post(self.url, data)
-#
-#         self.assertEqual(response.status_code, 302)
-#         self.assertEqual(response.url, reverse('show_playlist'))
-#         self.playlist.refresh_from_db()
-#         self.assertNotIn(self.song1, self.playlist.songs.all())
-#         self.assertNotIn(self.song2, self.playlist.songs.all())
-#
-#     def test_remove_playlist_songs_invalid_playlist_id(self):
-#         self.client.force_login(self.user)
-#
-#         data = {
-#             'selected_ids[]': [self.song1.id, self.song2.id],
-#             'id_playlist': 9999
-#         }
-#         response = self.client.post(self.url, data)
-#
-#         self.assertEqual(response.status_code, 404)
-#
-#         self.playlist.refresh_from_db()
-#         self.assertIn(self.song1, self.playlist.songs.all())
-#         self.assertIn(self.song2, self.playlist.songs.all())
-#
-#     def test_remove_playlist_songs_no_selected_songs(self):
-#         self.client.force_login(self.user)
-#
-#         data = {
-#             'selected_ids[]': [],
-#             'id_playlist': self.playlist.id
-#         }
-#         response = self.client.post(self.url, data)
-#
-#         self.assertEqual(response.status_code, 302)
-#         self.assertEqual(response.url, reverse('show_playlist'))
-#
-#         self.playlist.refresh_from_db()
-#         self.assertIn(self.song1, self.playlist.songs.all())
-#         self.assertIn(self.song2, self.playlist.songs.all())
+    def test_remove_playlist_songs_invalid_playlist_id(self):
+        self.client.force_login(self.user)
+
+        data = {
+            'selected_ids[]': [self.song1.id, self.song2.id],
+            'id_playlist': 9999
+        }
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, 404)
+
+        self.playlist.refresh_from_db()
+        self.assertIn(self.song1, self.playlist.songs.all())
+        self.assertIn(self.song2, self.playlist.songs.all())
+
+    def test_remove_playlist_songs_no_selected_songs(self):
+        self.client.force_login(self.user)
+
+        data = {
+            'selected_ids[]': [],
+            'id_playlist': self.playlist.id
+        }
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('show_playlist'))
+
+        self.playlist.refresh_from_db()
+        self.assertIn(self.song1, self.playlist.songs.all())
+        self.assertIn(self.song2, self.playlist.songs.all())
