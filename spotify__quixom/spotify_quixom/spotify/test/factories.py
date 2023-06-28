@@ -5,7 +5,6 @@ from django.contrib.auth import get_user_model
 from spotify.models import  User, Singer, Song, Favourite, PlayList
 
 
-
 class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Faker("user_name")
     email = factory.Faker("email")
@@ -48,28 +47,21 @@ class FavouriteFactory(factory.django.DjangoModelFactory):
 
         if extracted:
             # A list of songs was passed in, use them
-            self.songs.set(extracted)
-
+            for song in extracted:
+                self.songs.set(song)
 class PlayListFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("name")
     user = factory.SubFactory(UserFactory)
-    # songs = factory.RelatedFactory(
-    #     SongFactory,
-    #     factory_related_name='playlists',
-    # )
 
     class Meta:
         model = PlayList
 
     @factory.post_generation
     def songs(self, create, extracted, **kwargs):
-        print(create, extracted)
-        if not create:
-            # Simple build, do nothing.
-            return
 
+        if not create:
+            return
         if extracted:
-            # A list of groups were passed in, use them
             for song in extracted:
                 self.songs.add(song)
 

@@ -1,11 +1,12 @@
 from django.test import TestCase,Client
 from spotify.models import User
 from django.urls import reverse
+from .factories import UserFactory
 
 class RegisterTestCases(TestCase):
 
     def setUp(self):
-        self.client = Client()
+        self.user = UserFactory()
         self.url = reverse("singup")
 
 

@@ -201,13 +201,16 @@
 {% endif %}
 
 <script>
-  var songDeleteURL = "{% url 'song_delete' %}"
+  {% for song in songs %}
+
+  var songDeleteURL = "{% url 'song_delete' song.id %}"
   var csrf_token = "{{csrf_token}}"
   var favSongURL = "{% url 'song_fav' %}"
   var addtoPlaylistURL = "{% url 'add_song_playlist' %}"
   var songListURL = "{% url 'song_list' %}"
   var mulSongCreatePlaylist = "{% url 'mul_song_create_playlist' %}"
   var mulSongRemovePlaylist = "{% url 'mul_remove_playlist' %}"
+  {% endfor %}
 </script>
 <script src="{% static 'js/song_mul_delete.js' %}"></script>
 

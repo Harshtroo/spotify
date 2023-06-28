@@ -56,6 +56,7 @@ class SingUp(CreateView):
         if form.is_valid():
             user = form.save()
             user.save()
+
             user_role = user.role
             group = Group.objects.get(name=user_role)
             user.groups.add(group.id)
@@ -77,8 +78,6 @@ class SongCreate(SuccessMessageMixin, CreateView):
 
 
 class SongList(LoginRequiredMixin, ListView):
-    # model = Song
-
     template_name = "song_list.html"
     context_object_name = "songs"
     queryset = Song.objects.filter(is_deleted=False)
@@ -147,6 +146,7 @@ class AddToFavourite(CreateView):
             }
         else:
             obj.songs.add(Song.objects.get(id=song_id))
+            print("song_id=============",song_id)
             context = {
                 "is_added": True,
                 "message": "Song Added!",
@@ -235,7 +235,7 @@ class AddToPlaylist(LoginRequiredMixin, CreateView, ListView):
         # if id_playlist == '':
         #     messages.warning(request,"please select any one playlist")
         playlist = get_object_or_404(PlayList, id=id_playlist)
-        print("playlist", playlist)
+
         songs = Song.objects.filter(id__in=selected_ids)
         if len(songs) == 0:
             messages.warning(request, "Please select at least one song.")
