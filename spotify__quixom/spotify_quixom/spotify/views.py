@@ -5,6 +5,7 @@ from django.views.generic import (
     ListView,
     UpdateView,
     DeleteView,
+    FormView,
 )
 from django.contrib.auth.views import LoginView, LogoutView
 from .form import (
@@ -23,7 +24,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.db.models import Count
 
 class Home(TemplateView):
     """Home page view"""
@@ -86,6 +87,7 @@ class SongList(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
+        favourite_count = Favourite.objects.filter(user=self.request.user).aggregate(Count("songs")).get("songs__count")
         if Favourite.objects.filter(user=self.request.user).exists():
             song_obj = Favourite.objects.filter(user=self.request.user)
             song_id_list = []
@@ -94,7 +96,9 @@ class SongList(LoginRequiredMixin, ListView):
             context["song_id_list"] = song_id_list
             context["addplaylistform"] = AddToFavouriteForm
             context["createplaylistform"] = CreatePlayListForm
+            context["favourite_count"] = favourite_count
         return context
+
 
 
 class SongUpdate(SuccessMessageMixin, UpdateView):
@@ -146,7 +150,6 @@ class AddToFavourite(CreateView):
             }
         else:
             obj.songs.add(Song.objects.get(id=song_id))
-            print("song_id=============",song_id)
             context = {
                 "is_added": True,
                 "message": "Song Added!",
