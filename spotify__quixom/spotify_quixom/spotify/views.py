@@ -88,6 +88,9 @@ class SongList(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
         favourite_count = Favourite.objects.filter(user=self.request.user).aggregate(Count("songs")).get("songs__count")
+        song_active = Song.objects.values("is_deleted").annotate(total_songs=Count("id")).order_by("is_deleted")
+
+        song_val = song_active[0]["total_songs"]
         if Favourite.objects.filter(user=self.request.user).exists():
             song_obj = Favourite.objects.filter(user=self.request.user)
             song_id_list = []
@@ -97,6 +100,7 @@ class SongList(LoginRequiredMixin, ListView):
             context["addplaylistform"] = AddToFavouriteForm
             context["createplaylistform"] = CreatePlayListForm
             context["favourite_count"] = favourite_count
+            context["song_count"] =song_val
         return context
 
 

@@ -13,10 +13,6 @@ class EmailThreading(threading.Thread):
     def run(self):
         self.email.send(fail_silently=False)
 
-
-
-
-
 @receiver(post_save, sender=User)
 def send_user_email(sender, instance, created, **kwargs):
     if created:
