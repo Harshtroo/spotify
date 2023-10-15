@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/song_list.css' %}" />
+{% for message in messages %}
+<div class="alert {{ message.tags }} alert-dismissible" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+
+<!--This is add to playlist model in create playlist button modal-->
+<div class="modal fade" id="create_playlist_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content" id="style_modal">
+    <div class="modal-header">
+    <h5 class="modal-title" id="staticBackdropLabel1" align="center">Create playlist</h5>
+    </div>
+          <form class="px-md-2" method="POST" id="my-form1">
+            {% csrf_token %}
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label">Playlist name</label>
+                {{createplaylistform.name}}
+                {% for error in createplaylistform.name.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="create_playlist" class="btn btn-success btn-lg mb-1" >Submit</button>
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+</div>
+
+<!--This is click on add to playlist that time open modal-->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="staticBackdropLabel" align="center">Songs add to playlist</h5>
+    </div>
+          <form class="px-md-2" method="POST" id="add_playlist_form">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label" id="add_playlist_field" >Select playlist </label>
+                {{addplaylistform.playlist}}
+
+                {% for error in addplaylistform.playlist.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+            <button type="button" class="btn btn-primary create_btn">Create playlist</button>
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="add_playlist" class="btn btn-success btn-lg mb-1" >Submit</button>
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+</div>
+
+<!--This is click on remove to playlist that time open modal-->
+<div class="modal fade" id="remove_playlist" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title" id="remove_playlist_heading" align="center">Songs remove to playlist</h5>
+    </div>
+          <form class="px-md-2" method="POST" id="remove_playlist_song">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4">
+              <div class="form-outline datepicker">
+                <label for="exampleDatepicker1" class="form-label" >Select playlist </label>
+
+                <select name="{{filter.type_of_resource.html_name}}" class="btn btn-filter form-control text-dark text-left my-select" id="remove_playlist_lab"  style="background-color: #dbdce0">
+                  {% for key,value in addplaylistform.fields.playlist.choices %}
+                      <option value="{{key}}">{{value}}</option>
+                  {% endfor %}
+                </select>
+                {% for error in addplaylistform.playlist.errors %}
+                <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div id="error-message-remove-playlist" class="alert alert-danger" style="display: none;"></div>
+
+            <button type="button" class="btn btn-default close_btn" data-dismiss="modal">Close</button>
+            <button type="button" id="remove_playlist_submit" class="btn btn-success btn-lg mb-1" >Submit</button>
+
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+              <strong>{{ error|escape }}</strong>
+            </div>
+            {% endfor %}
+          </form>
+        </div>
+      </div>
+</div>
+
+<button type="button" class="btn btn-primary btn-playlist" >Add to Playlist</button>
+<button type="button" class="btn btn-primary btn-remove-playlist" >Remove to Playlist</button>
+<button type="button" class="btn_delete delete_master">Delete</button>
+<p>Total Active song: {{song_count}}</p>
+<!--This is a song list html-->
+<table class="table table-bordered" id="song-table" align="center">
+
+  <thead>
+    <tr class="table-dark">
+      <th scope="col">No.</th>
+      <th><input type="checkbox" class="select" id="all_select"></th>
+      <th scope="col">Song name</th>
+      <th scope="col">Singer name</th>
+      <th scope="col">Edit</th>
+      <th scope="col" title ={{favourite_count}}  >Add to favourite</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for song in songs %}
+    <tr song_id={{song.id}} id="table_{{song.id}}">
+      <th scope="row">{{forloop.counter}}</th>
+      <th><input type="checkbox" class="select_row" name="checkbox" value="{{song.id}}"></th>
+      <td>{{song.name}}</td>
+      <td>{{song.singer}}</td>
+      <td><button class="btn btn-primary btn_edit" href="{% url 'song_update' song.id %}" id="btn_edit_{{song.id}}">Edit</button>
+      </td>
+
+      <td id="fav">
+        {% if song.id in song_id_list %}
+        <a id="favourite" onclick="addFav({{ song.id }},this)">
+          <i class="fa fa-heart fa-2x fav" style="color:red;" aria-hidden="true" href="{% url 'song_fav' %}"></i>
+        </a>
+        {% else %}
+        <a id="unfavourite" onclick="addFav({{ song.id }},this)">
+          <i class="fa fa-heart-o fa-2x" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+<!--This is a song list page pagination-->
+{% if is_paginated %}
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+    {% else %}
+    <li class="page-item disabled">
+      <a class="page-link" href="#" tabindex="-1" aria-disabled="True">Previous</a>
+    </li>
+    {% endif %}
+
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    <li class="page-item active" aria-current="page">
+      <span class="page-link">
+        {{ i }}
+        <span class="sr-only">(current)</span>
+      </span>
+    </li>
+    {% else %}
+    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% else %}
+    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="True">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+<script>
+  {% for song in songs %}
+
+  var songDeleteURL = "{% url 'song_delete' song.id %}"
+  var csrf_token = "{{csrf_token}}"
+  var favSongURL = "{% url 'song_fav' %}"
+  var addtoPlaylistURL = "{% url 'add_song_playlist' %}"
+  var songListURL = "{% url 'song_list' %}"
+  var mulSongCreatePlaylist = "{% url 'mul_song_create_playlist' %}"
+  var mulSongRemovePlaylist = "{% url 'mul_remove_playlist' %}"
+  {% endfor %}
+</script>
+<script src="{% static 'js/song_mul_delete.js' %}"></script>
+
+{% endblock %}
