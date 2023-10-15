@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>    
+  <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="height:50px">
+    <div class="container-fluid" id="one">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBOiMACxUBQV4W7MwbSIOvArGCmsEtJA17ayn4-ybM&s"
+        height="50px" width="10%" style="border-radius: 0.5em; margin-left: -9px;">
+      <ul class="navbar-nav  mb-6 mb-lg-0">
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a name="person-outline" class="navbar-brand">{{user.username}}</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated%}
+        {% else%}
+        <li class="nav-item">
+          <a class="navbar-brand" href="{% url 'login' %}">Login</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'logout' %}">Logout</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'create_song' %}">Add song</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="navbar-brand" aria-current="page" href="{% url 'song_list' %}">Song list</a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        {% else %}
+        <li class="nav-item">
+          <a class="navbar-brand" href="{% url 'singup' %}">Sing Up</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+    {% block content %}
+
+    {% endblock %}
+  </div>
+</body>
+
+</html>
