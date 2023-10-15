@@ -2,12 +2,7 @@
 {% load static %}
 
 {% block content %}
-
-<link rel="stylesheet" type="text/css" href="{% static 'css/create_song.css' %}" />
-
-<div id="message">
-
-</div>
+<link rel="stylesheet" type="text/css" href="{% static 'css/play_list.css' %}" />
 
 <section class="h-100">
   <div class="container py-5 h-100">
@@ -17,17 +12,18 @@
           <div class="card-body p-4 p-md-5">
             <div class="form-outline datepicker">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2" align="center">
-                {% if form.instance.id %}
-                Edit song form
-                {% else %}
-                Add song form
-                {% endif%}
+                  {% if form.instance.id %}
+                  Edit playlist
+                  {% else %}
+                  Create play list
+                  {% endif %}
               </h3>
+
 
               <form class="px-md-2" method="POST" id="my-form" novalidate>
                 {% csrf_token %}
                 <div class="form-outline mb-4">
-                  <label class="form-label" for="form3Example1q">Song name</label>
+                  <label class="form-label" for="form3Example1q">Playlist name </label>
                   {{form.name}}
                   {% for error in form.name.errors %}
                   <div class="alert alert-danger">
@@ -35,32 +31,21 @@
                   </div>
                   {% endfor %}
                 </div>
-                <div class="form-outline mb-4">
-                  <div class="form-outline datepicker">
 
-                    <label for="exampleDatepicker1" class="form-label">Singer name</label>
-                    {{form.singer}}
-                    {% for error in form.singer.errors %}
-                    <div class="alert alert-danger">
-                      <strong>{{ error|escape }}</strong>
-                    </div>
-                    {% endfor %}
-                  </div>
-                </div>
-                <div class="form-outline mb-4">
-                  <label for="exampleDatepicker1" class="form-label">Song category</label>
-                  {{form.category}}
-                  {% for error in form.category.errors %}
+                 <div class="form-outline mb-4">
+                  <div class="form-outline datepicker">
+                    <label for="exampleDatepicker1" class="form-label">Song name</label>
+                  {{form.songs}}
+                  {% for error in form.songs.errors %}
                   <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>
                   </div>
                   {% endfor %}
+                  </div>
                 </div>
-                {% if form.instance.id %}
-                <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
-                {% else %}
-                <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
-                {% endif %}
+                 <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                    <button type="submit" class="btn btn-success btn-lg mb-1" >Submit</button>
+                 </div>
                 {% for error in form.non_field_errors %}
                 <div class="alert alert-danger">
                   <strong>{{ error|escape }}</strong>
@@ -73,7 +58,4 @@
       </div>
     </div>
 </section>
-
-
-
 {% endblock %}
